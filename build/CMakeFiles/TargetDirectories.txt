@@ -1,0 +1,3 @@
+/home/kss418/.vscode/AWS_Prac/build/CMakeFiles/rebuild_cache.dir
+/home/kss418/.vscode/AWS_Prac/build/CMakeFiles/edit_cache.dir
+/home/kss418/.vscode/AWS_Prac/build/CMakeFiles/AWS_Prac.dir

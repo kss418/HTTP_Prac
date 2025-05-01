@@ -1,0 +1,290 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "AWS_Prac"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"_add_executable",
+			"add_executable",
+			"target_link_libraries",
+			"include_directories"
+		],
+		"files" : 
+		[
+			"/home/kss418/.vscode/AWS_Prac/vcpkg/scripts/buildsystems/vcpkg.cmake",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 12,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 598,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 16,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 22,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g  "
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-fPIC"
+				},
+				{
+					"backtrace" : 3,
+					"fragment" : "-pthread"
+				},
+				{
+					"fragment" : "-std=c++2a"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 3,
+					"define" : "AWS_ENABLE_EPOLL"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "AWS_SDK_VERSION_MAJOR=1"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "AWS_SDK_VERSION_MINOR=11"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "AWS_SDK_VERSION_PATCH=534"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 4,
+					"path" : "/home/kss418/.vscode/AWS_Prac/server/include"
+				},
+				{
+					"backtrace" : 3,
+					"isSystem" : true,
+					"path" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/include"
+				},
+				{
+					"backtrace" : 3,
+					"isSystem" : true,
+					"path" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/include/mysql"
+				}
+			],
+			"language" : "CXX",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"id" : "AWS_Prac::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libmariadbcpp-static.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-cpp-sdk-core.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libmariadbclient.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libz.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libssl.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libcrypto.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libz.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libssl.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libcrypto.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lpthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libcurl-d.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lpthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libssl.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-crt-cpp.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-mqtt.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-event-stream.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-s3.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-auth.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-http.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-io.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libs2n.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-cal.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libcrypto.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-checksums.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-compression.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-sdkutils.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libaws-c-common.a",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-ldl",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lm",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-pthread",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "-lrt",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/debug/lib/libz.a",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "AWS_Prac",
+	"nameOnDisk" : "AWS_Prac",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "main.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}

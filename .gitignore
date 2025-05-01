@@ -1,0 +1,5 @@
+/vcpkg
+.vscode
+*.o
+/server/build
+/client/build

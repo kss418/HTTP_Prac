@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/kss418/.vscode/AWS_Prac/build",
+  "command": "/usr/bin/g++-13  -DAWS_ENABLE_EPOLL -DAWS_SDK_VERSION_MAJOR=1 -DAWS_SDK_VERSION_MINOR=11 -DAWS_SDK_VERSION_PATCH=534 -I/home/kss418/.vscode/AWS_Prac/server/include -isystem /home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/include -isystem /home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux/include/mysql  -g   -fPIC -pthread -std=c++2a -o CMakeFiles/AWS_Prac.dir/main.cpp.o -c /home/kss418/.vscode/AWS_Prac/server/main.cpp",
+  "file": "/home/kss418/.vscode/AWS_Prac/server/main.cpp"
+}
+]
