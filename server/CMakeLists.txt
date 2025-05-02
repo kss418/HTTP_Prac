@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 project(AWS_Prac)
 set(CMAKE_PREFIX_PATH "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux" CACHE STRING "")
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 

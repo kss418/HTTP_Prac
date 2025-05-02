@@ -1,5 +1,6 @@
 #include <iostream>
 #include <mariadb/conncpp.hpp>
+#include <expected>
 
 int main(){
     sql::Driver* driver = sql::mariadb::get_driver_instance();
