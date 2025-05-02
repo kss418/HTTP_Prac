@@ -15,6 +15,10 @@ int main(){
             {"port", "3306"},
             {"user", "root"},
             {"password", pw},
+            {"schema", "test"},
+            {"sslCa", "/etc/mysql/certs/ca.pem"},
+            {"tlsCert", "/etc/mysql/certs/server-cert.pem"},
+            {"tlsKey", "/etc/mysql/certs/server-key.pem"}
         });
 
         auto connection = std::unique_ptr<sql::Connection>(
