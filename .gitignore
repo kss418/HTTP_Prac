@@ -3,3 +3,4 @@
 *.o
 /server/build
 /client/build
+/build

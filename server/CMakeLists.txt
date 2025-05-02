@@ -19,4 +19,8 @@ target_link_libraries(AWS_Prac
     aws-cpp-sdk-core
 )
 
+target_include_directories(AWS_Prac
+  PRIVATE
+    ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include
+)
 include_directories(${PROJECT_SOURCE_DIR}/include)
