@@ -14,5 +14,5 @@ target_link_libraries(server
 target_include_directories(server
     PRIVATE
     ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include
+    ${PROJECT_SOURCE_DIR}/include
 )
-include_directories(${PROJECT_SOURCE_DIR}/include)

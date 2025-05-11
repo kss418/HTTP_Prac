@@ -1,4 +1,5 @@
 add_executable(client
+    src/Command_Parser.cpp
     main.cpp
 )
 
@@ -14,5 +15,5 @@ target_link_libraries(client
 target_include_directories(client
     PRIVATE
     ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include
+    ${PROJECT_SOURCE_DIR}/include
 )
-include_directories(${PROJECT_SOURCE_DIR}/include)
