@@ -1,31 +1,18 @@
-cmake_minimum_required(VERSION 3.15)
-project(AWS_Prac)
-set(CMAKE_PREFIX_PATH "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux" CACHE STRING "")
-
-set(CMAKE_CXX_STANDARD 23)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-find_package(unofficial-mariadb-connector-cpp CONFIG REQUIRED)
-find_package(aws-cpp-sdk-core REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED COMPONENTS beast asio)
-
-add_executable(AWS_Prac
+add_executable(server
     main.cpp
 )
 
-target_link_libraries(AWS_Prac
+target_link_libraries(server
     PRIVATE
     unofficial::mariadb-connector-cpp::mariadbcpp
     aws-cpp-sdk-core
     nlohmann_json::nlohmann_json
-    boost::beast
+    Boost::beast
     Boost::asio
 )
 
-target_include_directories(AWS_Prac
-  PRIVATE
+target_include_directories(server
+    PRIVATE
     ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include
 )
 include_directories(${PROJECT_SOURCE_DIR}/include)
