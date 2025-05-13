@@ -1,5 +1,5 @@
 add_executable(client
-    src/Command_Parser.cpp
+    src/CmdParser.cpp
     main.cpp
 )
 
