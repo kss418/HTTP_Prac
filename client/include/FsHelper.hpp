@@ -8,7 +8,9 @@ public:
     static FsHelper& get_instance();
 
     std::filesystem::path cwd() const;
+    bool exists(const std::filesystem::path& cwd) const;
     void set_cwd(const std::filesystem::path& cwd);
+    void mkdir(const std::filesystem::path& cwd);
 
     FsHelper() = default;
     FsHelper(const FsHelper&) = delete;

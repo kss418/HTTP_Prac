@@ -39,4 +39,12 @@ void CmdHelper::execute_cmd(const std::vector<std::string>& arg){
     if(arg[0] == "cd"){
         cd(arg);
     }
+    else if(arg[0] == "mkdir"){
+        mkdir(arg);
+    }
+
+    else{
+        std::cout << "존재하지 않는 명령어입니다." << std::endl;
+    }
+    
 }
