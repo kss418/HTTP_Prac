@@ -1,5 +1,6 @@
 add_executable(client
-    src/CmdParser.cpp
+    src/CmdHelper.cpp
+    src/FsHelper.cpp
     main.cpp
 )
 

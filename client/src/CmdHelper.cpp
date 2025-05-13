@@ -1,15 +1,15 @@
-#include "../include/CmdParser.hpp"
+#include "../include/CmdHelper.hpp"
 #include <iostream>
 
-CmdParser::CmdParser() {}
+CmdHelper::CmdHelper() {}
 
-std::vector<std::string> CmdParser::get_parsed_cmd(){
+void CmdHelper::get_cmd(){
     std::string input;
     std::getline(std::cin, input);
-    return parse_cmd(input);
+    execute_cmd(parse_cmd(input));
 }
 
-std::vector<std::string> CmdParser::parse_cmd(const std::string& input){
+std::vector<std::string> CmdHelper::parse_cmd(const std::string& input){
     std::vector<std::string> arg;
     std::string now;
 
@@ -30,4 +30,8 @@ std::vector<std::string> CmdParser::parse_cmd(const std::string& input){
     }
 
     return arg;
+}
+
+void CmdHelper::execute_cmd(const std::vector<std::string>& arg){
+
 }
