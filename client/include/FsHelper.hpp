@@ -1,17 +1,22 @@
 #pragma once
 #include <memory>
+#include <mutex>
+#include <filesystem>
 
 class FsHelper{
 public:
     static FsHelper& get_instance();
 
+    std::filesystem::path cwd() const;
+    void set_cwd(const std::filesystem::path& cwd);
+
+    FsHelper() = default;
     FsHelper(const FsHelper&) = delete;
     FsHelper& operator=(const FsHelper&) = delete;
     FsHelper(FsHelper&&) = delete;
     FsHelper& operator=(FsHelper&&) = delete;
 private:
-    FsHelper() = default;
-    
+    std::filesystem::path m_working_path;
     static std::once_flag m_init_flag;
     static std::unique_ptr<FsHelper> m_instance;
 };
