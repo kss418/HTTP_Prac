@@ -29,6 +29,8 @@ private:
     http::verb m_method;
     boost::beast::string_view m_target;
     boost::beast::string_view m_body;
+    std::string m_host;
+    http::response <http::string_body> m_res;
 
     void handle_connect(const boost::system::error_code& ec);
     void handle_write(

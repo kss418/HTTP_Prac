@@ -13,6 +13,7 @@ Session::Session(
     m_target(target),
     m_body(body)
 {
+    m_host = ip + ":" + std::to_string(port);
     m_socket.async_connect(
         m_endpoint, 
         [this](const boost::system::error_code& ec){
@@ -26,6 +27,7 @@ void Session::write(){
         m_method, m_target, m_version
     );
     req->set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+    req->set(http::field::host, m_host);
     
     if(!m_body.empty()){
         req->body() = m_body;
@@ -45,11 +47,10 @@ void Session::write(){
 }
 
 void Session::read(){
-    http::request <http::string_body> req;
     http::async_read(
         m_socket,
         m_buffer,
-        req,
+        m_res,
         [this](
             const boost::system::error_code& ec,
             std::size_t bytes_transffered
