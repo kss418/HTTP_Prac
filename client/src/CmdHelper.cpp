@@ -2,7 +2,12 @@
 #include <iostream>
 
 void CmdHelper::get_cmd(){
-    std::cout << FsHelper::get_instance().cwd().string() << "$ ";
+    auto cwd = FsHelper::get_instance().cwd().string();
+    if(cwd.back() == '/' && cwd.size() > 1){
+        cwd.pop_back();
+    }
+    std::cout << cwd << "$ ";
+    
     std::string input;
     std::getline(std::cin, input);
     execute_cmd(parse_cmd(input));
