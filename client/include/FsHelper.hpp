@@ -11,6 +11,7 @@ public:
     bool exists(const std::filesystem::path& cwd) const;
     void set_cwd(const std::filesystem::path& cwd);
     void mkdir(const std::filesystem::path& cwd);
+    void ls() const;
 
     FsHelper() = default;
     FsHelper(const FsHelper&) = delete;

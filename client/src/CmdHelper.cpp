@@ -7,7 +7,7 @@ void CmdHelper::get_cmd(){
         cwd.pop_back();
     }
     std::cout << cwd << "$ ";
-    
+
     std::string input;
     std::getline(std::cin, input);
     execute_cmd(parse_cmd(input));
@@ -46,6 +46,12 @@ void CmdHelper::execute_cmd(const std::vector<std::string>& arg){
     }
     else if(arg[0] == "mkdir"){
         mkdir(arg);
+    }
+    else if(arg[0] == "ls"){
+        ls();
+    }
+    else if(arg[0] == "rmdir"){
+        //rmdir(arg);
     }
 
     else{

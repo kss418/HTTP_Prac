@@ -31,3 +31,8 @@ void CmdHelper::mkdir(const std::vector<std::string>& arg){
     auto& fs = FsHelper::get_instance();
     fs.mkdir(arg[1]); 
 }
+
+void CmdHelper::ls(){
+    auto& fs = FsHelper::get_instance();
+    fs.ls();
+}

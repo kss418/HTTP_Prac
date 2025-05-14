@@ -32,3 +32,15 @@ void FsHelper::mkdir(const std::filesystem::path& cwd){
         std::cout << "이미 존재하는 디렉토리입니다." << std::endl;
     }
 }
+
+void FsHelper::ls() const{
+    for(const auto& cur : std::filesystem::directory_iterator(m_working_path)){
+        if(cur.is_directory()){
+            std::cout << "[DIR] ";
+        }
+        else{
+            std::cout << "[FILE] ";
+        }
+        std::cout << cur.path().filename().string() << std::endl;
+    }
+}
