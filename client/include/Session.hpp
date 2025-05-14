@@ -35,4 +35,8 @@ private:
         const boost::system::error_code& ec,
         std::size_t bytes_transffered
     );
+    void handle_read(
+        const boost::system::error_code& ec,
+        std::size_t bytes_transffered
+    );
 };
