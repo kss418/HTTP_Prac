@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 project(AWS_Prac)
 set(CMAKE_PREFIX_PATH "/home/kss418/.vscode/AWS_Prac/vcpkg/installed/x64-linux" CACHE STRING "")
+set(CMAKE_TOOLCHAIN_FILE
+    "${CMAKE_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+    CACHE STRING "Vcpkg toolchain file"
+)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

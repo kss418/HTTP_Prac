@@ -2,49 +2,25 @@
 #include <mariadb/conncpp.hpp>
 #include <expected>
 #include <memory>
+#include "include/DBHelper.hpp"
 
 int main(){
-    // 환경 변수 설정하기
-    std::string pw = getenv("DB_PASSWORD");
+    DBHelper& db_helper = DBHelper::get_instance();
+    
+    auto statment = std::unique_ptr<sql::PreparedStatement>(
+        db_helper.connection->prepareStatement(
+            "INSERT INTO users (id, password, username) VALUES (?, ?, ?)"
+        )
+    );
 
-    try {
-        sql::Driver* driver = sql::mariadb::get_driver_instance();
+    statment->setString(1, "kss418");
+    statment->setString(2, "1234");
+    statment->setString(3, "kss418");
+    statment->execute();
 
-        sql::Properties props({
-            {"hostName", "127.0.0.1"},
-            {"port", "3306"},
-            {"user", "root"},
-            {"password", pw},
-            {"schema", "test"},
-            {"sslCa", "/etc/mysql/certs/ca.pem"},
-            {"tlsCert", "/etc/mysql/certs/server-cert.pem"},
-            {"tlsKey", "/etc/mysql/certs/server-key.pem"}
-        });
-
-        auto connection = std::unique_ptr<sql::Connection>(
-            driver->connect(props)  
-        );
-
-        if(!connection){
-            std::cout << "connection is nullptr" << std::endl;
-            return 1;
-        }
-
-        auto statment = std::unique_ptr<sql::PreparedStatement>(
-            connection->prepareStatement(
-                "INSERT INTO users (id, password, username) VALUES (?, ?, ?)"
-            )
-        );
-
-        statment->setString(1, "kss418");
-        statment->setString(2, "1234");
-        statment->setString(3, "kss418");
-        statment->execute();
-        
-    }
-    catch (sql::SQLException& e){
-        std::cerr << "Error: " << e.what();
-        std::cerr << " (Code=" << e.getErrorCode() << ")" << std::endl;
+    if(db_helper.connection){
+        db_helper.connection->close();
+        db_helper.connection.reset();
     }
 
     return 0;

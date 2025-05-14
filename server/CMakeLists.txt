@@ -1,4 +1,5 @@
 add_executable(server
+    src/DBHelper.cpp
     main.cpp
 )
 
