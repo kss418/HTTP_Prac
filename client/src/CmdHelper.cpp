@@ -51,7 +51,7 @@ void CmdHelper::execute_cmd(const std::vector<std::string>& arg){
         ls();
     }
     else if(arg[0] == "rmdir"){
-        //rmdir(arg);
+        rmdir(arg);
     }
 
     else{

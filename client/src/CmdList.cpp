@@ -36,3 +36,8 @@ void CmdHelper::ls(){
     auto& fs = FsHelper::get_instance();
     fs.ls();
 }
+
+void CmdHelper::rmdir(const std::vector<std::string>& arg){
+    auto& fs = FsHelper::get_instance();
+    fs.rmdir(arg[1]);
+}
