@@ -29,6 +29,15 @@ int main(){
         }
 
         std::cout << req << std::endl;
+
+
+        http::response <http::string_body> res{
+            http::status::ok, req.version()
+        };
+        res.set(http::field::content_type, "text/plain; charset=utf-8");
+        res.body() = "로그인 페이지입니다.";
+        res.prepare_payload();
+        http::write(socket, res);
     }
 
     return 0;

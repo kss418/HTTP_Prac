@@ -2,6 +2,8 @@ add_executable(client
     src/CmdHelper.cpp
     src/CmdList.cpp
     src/FsHelper.cpp
+    src/Session.cpp
+    src/SessionHandler.cpp
     main.cpp
 )
 
