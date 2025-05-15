@@ -31,4 +31,6 @@ void Acceptor::handle_accept(
 		auto session = std::make_shared<Session>(std::move(socket));
 		session->read();
 	}
+
+	accept();
 }

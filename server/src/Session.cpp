@@ -24,8 +24,8 @@ void Session::execute_request(){
     auto target = m_req.target();
 
     auto pos_q = target.find('?');
-    std::string path = target.substr(0, pos_q);
-    std::string arg = target.substr(pos_q);
+    std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
+    std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
 
     if(method == http::verb::post && path == "/login"){
         login();
