@@ -3,6 +3,7 @@ add_executable(server
     src/Session.cpp
     src/SessionHandler.cpp
     src/Acceptor.cpp
+    src/Service.cpp
     main.cpp
 )
 

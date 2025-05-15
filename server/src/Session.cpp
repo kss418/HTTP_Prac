@@ -1,5 +1,7 @@
 #include "../include/Session.hpp"
+#include "../include/Service.hpp"
 #include <iostream>
+#include <nlohmann/json.hpp>
 
 Session::Session(std::shared_ptr<tcp::socket> socket)
   :  m_socket(std::move(socket)){
@@ -27,11 +29,8 @@ void Session::execute_request(){
     std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
     std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
 
+    nlohmann::json body = nlohmann::json::parse(m_req.body());
     if(method == http::verb::post && path == "/login"){
-        login();
+        Service::login(body);
     }
-}
-
-void Session::login(){
-    std::cout << "로그인" << std::endl;
 }

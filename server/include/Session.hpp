@@ -18,7 +18,6 @@ private:
 
     void write();
     void execute_request();
-    void login();
     
     void handle_read(const boost::system::error_code& ec);
 };
