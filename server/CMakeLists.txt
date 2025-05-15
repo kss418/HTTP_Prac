@@ -1,5 +1,7 @@
 add_executable(server
     src/DBHelper.cpp
+    src/Session.cpp
+    src/SessionHandler.cpp
     main.cpp
 )
 
