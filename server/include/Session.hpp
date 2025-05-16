@@ -2,6 +2,7 @@
 #include <memory>
 #include <boost/beast.hpp>
 #include <boost/asio.hpp>
+#include <nlohmann/json.hpp>
 
 namespace http = boost::beast::http;
 
@@ -16,8 +17,9 @@ private:
     boost::beast::flat_buffer m_buffer;
     http::request <http::string_body> m_req;
 
-    void write();
+    void write(http::status status, const nlohmann::json& json = {});
     void execute_request();
     
+    void handle_write(const boost::system::error_code& ec);
     void handle_read(const boost::system::error_code& ec);
 };

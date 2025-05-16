@@ -9,3 +9,9 @@ void Session::handle_read(const boost::system::error_code& ec){
         execute_request();
     }
 }
+
+void Session::handle_write(const boost::system::error_code& ec){
+    if(ec){
+        std::cout << "쓰기 실패 : " << ec.message() << std::endl;
+    }
+}
