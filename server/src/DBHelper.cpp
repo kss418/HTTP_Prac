@@ -1,5 +1,6 @@
 #include "../include/DBHelper.hpp"
 #include <iostream>
+#include <memory>
 
 std::once_flag DBHelper::m_init_flag;
 std::unique_ptr<DBHelper> DBHelper::m_instance;
@@ -41,4 +42,23 @@ void DBHelper::close(){
         m_instance->connection->close();
         m_instance->connection.reset();
     }
+}
+
+bool DBHelper::match_pw(const std::string& id, const std::string& pw){
+    std::unique_ptr<sql::PreparedStatement> query(
+        connection->prepareStatement(
+            "SELECT pw FROM users WHERE id = ?"
+        )
+    );
+
+    query->setString(1, id);
+    std::unique_ptr<sql::ResultSet> result(
+        query->executeQuery()
+    );
+
+    if(result->next()){
+        return pw == result->getString("pw");
+    }
+
+    return 0;
 }

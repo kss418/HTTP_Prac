@@ -6,7 +6,7 @@ Session::Session(
     unsigned short port,
     http::verb method,
     boost::beast::string_view target,
-    boost::beast::string_view body
+    nlohmann::json body
 ) : m_endpoint(boost::asio::ip::make_address_v4(ip), port),
     m_socket(io_context),
     m_method(method),
@@ -30,7 +30,7 @@ void Session::write(){
     req->set(http::field::host, m_host);
     
     if(!m_body.empty()){
-        req->body() = m_body;
+        req->body() = m_body.dump();
         req->prepare_payload();
     }
 

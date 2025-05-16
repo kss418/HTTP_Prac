@@ -9,7 +9,6 @@ using tcp = boost::asio::ip::tcp;
 namespace http = boost::beast::http;
 
 int main(){
-    // DBHelper& db_helper = DBHelper::get_instance();
     boost::asio::io_context io_context;
     Acceptor acceptor(io_context, 8080);
     io_context.run();

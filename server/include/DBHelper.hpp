@@ -7,6 +7,8 @@ class DBHelper{
 public:
     static DBHelper& get_instance();
     static void close();
+    bool match_pw(const std::string& id, const std::string& pw);
+    //bool create_id(const std::string& id, const std::string& pw);
 
     DBHelper() = default;
     DBHelper(const DBHelper&) = delete;

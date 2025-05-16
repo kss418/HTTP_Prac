@@ -3,6 +3,7 @@
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include <boost/beast/http.hpp>
+#include <nlohmann/json.hpp>
 
 namespace http = boost::beast::http;
 
@@ -16,7 +17,7 @@ public:
         unsigned short port,
         http::verb method,
         boost::beast::string_view target,
-        boost::beast::string_view body = {}
+        nlohmann::json body = {}
     );
 
     void write();
@@ -28,7 +29,7 @@ private:
     boost::beast::flat_buffer m_buffer;
     http::verb m_method;
     boost::beast::string_view m_target;
-    boost::beast::string_view m_body;
+    nlohmann::json m_body;
     std::string m_host;
     http::response <http::string_body> m_res;
 

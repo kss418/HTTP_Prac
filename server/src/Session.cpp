@@ -29,6 +29,11 @@ void Session::execute_request(){
     std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
     std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
 
+    if(!nlohmann::json::accept(m_req.body())){
+        std::cout << "파싱 불가" << std::endl;
+        std::cout << m_req.body() << std::endl;
+        return;
+    }
     nlohmann::json body = nlohmann::json::parse(m_req.body());
     if(method == http::verb::post && path == "/login"){
         Service::login(body);
