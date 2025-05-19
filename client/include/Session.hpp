@@ -4,6 +4,7 @@
 #include <boost/beast.hpp>
 #include <boost/beast/http.hpp>
 #include <nlohmann/json.hpp>
+#include <future>
 
 namespace http = boost::beast::http;
 
@@ -15,6 +16,7 @@ public:
         boost::asio::io_context& io_context,
         const std::string& ip,
         unsigned short port,
+        std::promise <http::response <http::string_body>>& prom,
         http::verb method,
         boost::beast::string_view target,
         nlohmann::json body = {}
@@ -31,6 +33,7 @@ private:
     boost::beast::string_view m_target;
     nlohmann::json m_body;
     std::string m_host;
+    std::promise <http::response <http::string_body>>& m_prom;
     http::response <http::string_body> m_res;
 
     void handle_connect(const boost::system::error_code& ec);

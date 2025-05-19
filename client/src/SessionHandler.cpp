@@ -31,7 +31,7 @@ void Session::handle_read(
         std::cout << "읽기 실패 : " << ec.message() << std::endl;
     }
     else{
-        std::cout << m_res << std::endl;
+        m_prom.set_value(m_res);
         m_socket.close();
     }
 }

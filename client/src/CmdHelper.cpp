@@ -1,6 +1,10 @@
 #include "../include/CmdHelper.hpp"
 #include <iostream>
 
+CmdHelper::CmdHelper(boost::asio::io_context& io_context) 
+  :  m_io_context(io_context){
+}
+
 void CmdHelper::get_cmd(){
     auto cwd = FsHelper::get_instance().cwd().string();
     if(cwd.back() == '/' && cwd.size() > 1){
@@ -52,6 +56,10 @@ void CmdHelper::execute_cmd(const std::vector<std::string>& arg){
     }
     else if(arg[0] == "rmdir"){
         rmdir(arg);
+    }
+    else if(arg[0] == "login"){
+        if(login(arg)) std::cout << "로그인 성공" << std::endl;
+        else std::cout << "아이디 또는 비밀번호가 틀립니다." << std::endl;
     }
 
     else{

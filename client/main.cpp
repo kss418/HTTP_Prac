@@ -1,18 +1,24 @@
 #include <iostream>
 #include <string>
+#include <thread>
 #include "include/CmdHelper.hpp"
 #include "include/FsHelper.hpp"
 #include "include/Session.hpp"
 
-
 int main(){
-    CmdHelper cmd_helper;
-
     boost::asio::io_context io_context;
-    Session session(io_context, "127.0.0.1", 8080, http::verb::post, "/login", {{"id", "kss418"}, {"pw", "1234"}});
-    io_context.run();
+    auto work = boost::asio::make_work_guard(io_context);
+    std::thread th([&](){
+        io_context.run();
+    });
 
+
+    CmdHelper cmd_helper(io_context);
     while(1){
-        //cmd_helper.get_cmd();
+        cmd_helper.get_cmd();
     }
+
+    work.reset();
+    th.join();
+    return 0;
 }

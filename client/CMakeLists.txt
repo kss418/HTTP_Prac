@@ -7,6 +7,12 @@ add_executable(client
     main.cpp
 )
 
+target_include_directories(client
+    PRIVATE
+    ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include
+    ${PROJECT_SOURCE_DIR}/include
+)
+
 target_link_libraries(client
     PRIVATE
     unofficial::mariadb-connector-cpp::mariadbcpp
@@ -14,10 +20,4 @@ target_link_libraries(client
     nlohmann_json::nlohmann_json
     Boost::beast
     Boost::asio
-)
-
-target_include_directories(client
-    PRIVATE
-    ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include
-    ${PROJECT_SOURCE_DIR}/include
 )

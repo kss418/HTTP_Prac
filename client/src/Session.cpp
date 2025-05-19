@@ -1,9 +1,11 @@
 #include "../include/Session.hpp"
+#include <iostream>
 
 Session::Session(
     boost::asio::io_context& io_context,
     const std::string& ip,
     unsigned short port,
+    std::promise <http::response <http::string_body>>& prom,
     http::verb method,
     boost::beast::string_view target,
     nlohmann::json body
@@ -11,7 +13,8 @@ Session::Session(
     m_socket(io_context),
     m_method(method),
     m_target(target),
-    m_body(body)
+    m_body(body),
+    m_prom(prom)
 {
     m_host = ip + ":" + std::to_string(port);
     m_socket.async_connect(
