@@ -43,10 +43,10 @@ void CmdHelper::rmdir(const std::vector<std::string>& arg){
     fs.rmdir(arg[1]);
 }
 
-bool CmdHelper::sign_in(const std::vector<std::string>& arg){
+void CmdHelper::sign_in(const std::vector<std::string>& arg){
     if(arg.size() <= 2){
         std::cout << "아이디와 비밀번호를 입력해주세요." << std::endl;
-        return 0;
+        return;
     }
     
     std::promise <http::response <http::string_body>> prom;
@@ -57,40 +57,53 @@ bool CmdHelper::sign_in(const std::vector<std::string>& arg){
     http::response <http::string_body> res = fut.get();
     if(res.result() != http::status::ok){
         std::cout << "Status code : " << res.result() << std::endl;
-        return 0;
+        return;
     }
 
     if(!nlohmann::json::accept(res.body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
-        return 0;
+        return;
     }
 
     nlohmann::json json = nlohmann::json::parse(res.body());
-    return json["result"].get<bool>();
+    bool ret = json.value("result", 0);
+    if(!ret){
+        std::cout << "아이디 또는 비밀번호가 일치하지 않습니다." << std::endl;
+    }
+    else{
+        std::cout << "로그인 성공" << std::endl;
+    }
 }
 
-int8_t CmdHelper::sign_up(const std::vector<std::string>& arg){
+void CmdHelper::sign_up(const std::vector<std::string>& arg){
     if(arg.size() <= 2){
         std::cout << "아이디와 비밀번호를 입력해주세요." << std::endl;
-        return 0;
+        return;
     }
 
     std::promise <http::response <http::string_body>> prom;
     std::future <http::response <http::string_body>> fut = prom.get_future();
 
-    Session session(m_io_context, "127.0.0.1", 8080, prom, http::verb::post, "/login", {{"id", arg[1]}, {"pw", arg[2]}});
+    Session session(m_io_context, "127.0.0.1", 8080, prom, http::verb::post, "/register", {{"id", arg[1]}, {"pw", arg[2]}});
     
     http::response <http::string_body> res = fut.get();
     if(res.result() != http::status::ok){
         std::cout << "Status code : " << res.result() << std::endl;
-        return 0;
+        return;
     }
 
     if(!nlohmann::json::accept(res.body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
-        return 0;
+        return;
     }
 
     nlohmann::json json = nlohmann::json::parse(res.body());
-    return 0;
+    bool ret = json.value("result", 0);
+    if(!ret){
+        std::cout << "이미 존재하는 아이디입니다." << std::endl;
+    }
+    else{
+        std::cout << "회원가입 성공" << std::endl;
+    }
 }
+

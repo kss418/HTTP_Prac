@@ -20,31 +20,6 @@ void Session::read(){
     );
 }
 
-void Session::execute_request(){
-    auto method = m_req.method();
-    auto target = m_req.target();
-
-    auto pos_q = target.find('?');
-    std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
-    std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
-
-    if(!nlohmann::json::accept(m_req.body())){
-        std::cout << "파싱 불가" << std::endl;
-        std::cout << m_req.body() << std::endl;
-        write(http::status::bad_request);
-        return;
-    }
-
-    nlohmann::json json = nlohmann::json::parse(m_req.body());
-    if(method == http::verb::post && path == "/login"){
-        bool ret = Service::sign_in(json);
-        write(http::status::ok, {{"result", ret}});
-    }
-    else if(method == http::verb::post && path == "/register"){
-        int8_t ret = Service::sign_up(json);
-    }
-}
-
 void Session::write(http::status status, const nlohmann::json& json){
     auto res = std::make_shared<http::response<http::string_body>>(
         status, m_req.version()
@@ -67,4 +42,30 @@ void Session::write(http::status status, const nlohmann::json& json){
             self->handle_write(ec);
         }
     );
+}
+
+void Session::execute_request(){
+    auto method = m_req.method();
+    auto target = m_req.target();
+
+    auto pos_q = target.find('?');
+    std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
+    std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
+
+    if(!nlohmann::json::accept(m_req.body())){
+        std::cout << "파싱 불가" << std::endl;
+        std::cout << m_req.body() << std::endl;
+        write(http::status::bad_request);
+        return;
+    }
+
+    nlohmann::json json = nlohmann::json::parse(m_req.body());
+    if(method == http::verb::post && path == "/login"){
+        bool ret = Service::sign_in(json);
+        write(http::status::ok, {{"result", ret}});
+    }
+    else if(method == http::verb::post && path == "/register"){
+        bool ret = Service::sign_up(json);
+        write(http::status::ok, {{"result", ret}});
+    }
 }

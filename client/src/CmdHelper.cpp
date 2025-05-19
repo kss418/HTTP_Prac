@@ -58,8 +58,10 @@ void CmdHelper::execute_cmd(const std::vector<std::string>& arg){
         rmdir(arg);
     }
     else if(arg[0] == "login"){
-        if(login(arg)) std::cout << "로그인 성공" << std::endl;
-        else std::cout << "아이디 또는 비밀번호가 틀립니다." << std::endl;
+        sign_in(arg);
+    }
+    else if(arg[0] == "register"){
+        sign_up(arg);
     }
 
     else{

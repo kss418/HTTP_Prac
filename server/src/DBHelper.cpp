@@ -62,3 +62,32 @@ bool DBHelper::match_pw(const std::string& id, const std::string& pw){
 
     return 0;
 }
+
+bool DBHelper::create_id(const std::string& id, const std::string& pw){
+    std::unique_ptr<sql::PreparedStatement> select_query(
+        connection->prepareStatement(
+            "SELECT pw FROM users WHERE id = ?"
+        )
+    );
+
+    select_query->setString(1, id);
+    std::unique_ptr<sql::ResultSet> select_result(
+        select_query->executeQuery()
+    );
+
+    if(select_result->next()){
+        return 0;
+    }
+
+    std::unique_ptr<sql::PreparedStatement> insert_query(
+        connection->prepareStatement(
+            "INSERT INTO users (id, pw) VALUES (?, ?)"
+        )
+    );
+
+    insert_query->setString(1, id);
+    insert_query->setString(2, pw);
+    insert_query->executeUpdate();
+
+    return 1;
+}

@@ -15,8 +15,8 @@ private:
     void mkdir(const std::vector<std::string>& arg);
     void rmdir(const std::vector<std::string>& arg);
     void ls();
-    bool sign_in(const std::vector<std::string>& arg);
-    int8_t sign_up(const std::vector<std::string>& arg);
+    void sign_in(const std::vector<std::string>& arg);
+    void sign_up(const std::vector<std::string>& arg);
 
     boost::asio::io_context& m_io_context;
 };

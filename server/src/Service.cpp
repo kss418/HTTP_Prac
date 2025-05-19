@@ -10,7 +10,7 @@ bool Service::sign_in(json json){
     return db_helper.match_pw(id, pw);
 }
 
-int8_t Service::sign_up(json json){
+bool Service::sign_up(json json){
     auto& db_helper = DBHelper::get_instance();
     std::string id = json.value("id", "");
     std::string pw = json.value("pw", "");
@@ -19,5 +19,5 @@ int8_t Service::sign_up(json json){
         return 0;
     }
 
-    
+    return db_helper.create_id(id, pw);
 }
