@@ -35,10 +35,13 @@ void Session::execute_request(){
         return;
     }
 
-    nlohmann::json body = nlohmann::json::parse(m_req.body());
+    nlohmann::json json = nlohmann::json::parse(m_req.body());
     if(method == http::verb::post && path == "/login"){
-        bool ret = Service::login(body);
+        bool ret = Service::sign_in(json);
         write(http::status::ok, {{"result", ret}});
+    }
+    else if(method == http::verb::post && path == "/register"){
+        int8_t ret = Service::sign_up(json);
     }
 }
 

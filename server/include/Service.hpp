@@ -4,5 +4,6 @@
 
 namespace Service{
     using json = nlohmann::json;
-    bool login(json body);
+    bool sign_in(json body);
+    int8_t sign_up(json body);
 };
