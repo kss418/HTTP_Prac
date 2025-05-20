@@ -31,6 +31,7 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
     }
     else{
         std::cout << "로그인 성공" << std::endl;
+        id = arg[1];
         logged_in = 1;
     }
 }
@@ -74,5 +75,6 @@ void CmdHelper::sign_up(const std::vector<std::string>& arg){
 
 void CmdHelper::logout(){
     std::cout << "로그아웃" << std::endl;
+    id.clear();
     logged_in = 0;
 }

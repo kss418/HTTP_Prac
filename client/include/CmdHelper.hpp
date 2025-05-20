@@ -44,6 +44,7 @@ private:
     int8_t file_state = 0;
     int8_t load_state = 0;
 
+    std::string id;
     std::string local_path;
     std::string server_path;
     boost::asio::io_context& m_io_context;

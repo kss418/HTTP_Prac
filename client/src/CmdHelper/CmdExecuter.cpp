@@ -106,18 +106,18 @@ void CmdHelper::set(const std::vector<std::string>& arg){
 
     if(file_state == 1){
         if(load_state == 1){
-            set_upload_file(arg);
+            // set_upload_file(arg);
         }
         else{
-            set_download_file(arg);
+            // set_download_file(arg);
         }
     }
     else if(file_state == 2){
         if(load_state == 1){
-            set_upload_dir(arg);
+            // set_upload_dir(arg);
         }
         else {
-            set_download_dir(arg);
+            // set_download_dir(arg);
         }   
     }
     else{
