@@ -48,6 +48,11 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
         std::cout << "아이디와 비밀번호를 입력해주세요." << std::endl;
         return;
     }
+
+    if(arg[1].size() >= 20){
+        std::cout << "아이디의 길이는 최대 20까지 설정 할 수 있습니다." << std::endl;
+        return;
+    }
     
     std::promise <http::response <http::string_body>> prom;
     std::future <http::response <http::string_body>> fut = prom.get_future();
