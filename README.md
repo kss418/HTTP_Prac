@@ -1,8 +1,8 @@
-# AWS를 사용한 원격 드라이브
+# 원격 드라이브
 
 DB -> Maria DB
 
-tcp -> Boost
+tcp, http -> Boost
 
 json Parser -> nlohmann
 
