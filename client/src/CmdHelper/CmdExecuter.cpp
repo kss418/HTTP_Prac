@@ -27,10 +27,10 @@ void CmdHelper::login_execute(const std::vector<std::string>& arg){
         logout();
     }
     else if(arg[0] == "upload"){
-        upload();
+        // upload();
     }
     else if(arg[0] == "download"){
-        download();
+        // download();
     }
     else{
         std::cout << "존재하지 않는 명령어입니다." << std::endl;

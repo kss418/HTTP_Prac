@@ -1,10 +1,12 @@
 add_executable(client
-    src/CmdHelper.cpp
-    src/CmdList.cpp
+    src/CmdHelper/CmdHelper.cpp
+    src/CmdHelper/ClientCmdList.cpp
+    src/CmdHelper/LoginCmdList.cpp;
+    src/CmdHelper/SessionCmdList.cpp;
+    src/CmdHelper/CmdExecuter.cpp;
     src/FsHelper.cpp
     src/Session.cpp
     src/SessionHandler.cpp
-    src/CmdExecuter.cpp;
     main.cpp
 )
 

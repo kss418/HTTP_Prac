@@ -1,4 +1,5 @@
 #include "../../include/CmdHelper.hpp"
+#include "../../include/Session.hpp"
 #include <iostream>
 
 void CmdHelper::sign_in(const std::vector<std::string>& arg){
