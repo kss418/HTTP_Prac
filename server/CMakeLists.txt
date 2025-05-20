@@ -16,7 +16,6 @@ target_include_directories(server
 target_link_libraries(server
     PRIVATE
     unofficial::mariadb-connector-cpp::mariadbcpp
-    aws-cpp-sdk-core
     nlohmann_json::nlohmann_json
     Boost::beast
     Boost::asio
