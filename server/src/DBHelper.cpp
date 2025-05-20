@@ -1,9 +1,34 @@
 #include "../include/DBHelper.hpp"
 #include <iostream>
 #include <memory>
+#include <openssl/sha.h>
 
 std::once_flag DBHelper::m_init_flag;
 std::unique_ptr<DBHelper> DBHelper::m_instance;
+
+std::string hash(const std::string& pw){
+    std::string salt = std::getenv("SALT");
+    std::string salted_pw = pw + salt;
+    
+    unsigned char tmp[SHA512_DIGEST_LENGTH];
+    SHA512(
+        reinterpret_cast<const unsigned char*>(
+            salted_pw.data()
+        ), salted_pw.size(), tmp
+    );
+
+    std::string ret;
+    auto tf = [](unsigned char num) -> char{
+        return (num <= 9 ? num + '0' : num + 'A' - 10);
+    };
+
+    for(int i = 0;i < SHA512_DIGEST_LENGTH;i++){
+        ret.push_back(tf(tmp[i] / 16));
+        ret.push_back(tf(tmp[i] % 16));
+    }
+    
+    return ret;
+}   
 
 DBHelper& DBHelper::get_instance(){
     std::call_once(m_init_flag, [](){
@@ -57,7 +82,7 @@ bool DBHelper::match_pw(const std::string& id, const std::string& pw){
     );
 
     if(result->next()){
-        return pw == result->getString("pw");
+        return hash(pw) == result->getString("pw");
     }
 
     return 0;
@@ -86,7 +111,7 @@ bool DBHelper::create_id(const std::string& id, const std::string& pw){
     );
 
     insert_query->setString(1, id);
-    insert_query->setString(2, pw);
+    insert_query->setString(2, hash(pw));
     insert_query->executeUpdate();
 
     return 1;
