@@ -68,4 +68,5 @@ void Session::execute_request(){
         bool ret = Service::sign_up(json);
         write(http::status::ok, {{"result", ret}});
     }
+
 }

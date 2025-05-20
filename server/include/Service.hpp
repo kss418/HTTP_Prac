@@ -4,6 +4,7 @@
 
 namespace Service{
     using json = nlohmann::json;
-    bool sign_in(json body);
-    bool sign_up(json body);
+    bool sign_in(json json);
+    bool sign_up(json json);
+    std::string download(json json);
 };

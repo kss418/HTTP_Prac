@@ -21,3 +21,7 @@ bool Service::sign_up(json json){
 
     return db_helper.create_id(id, pw);
 }
+
+std::string Service::download(json json){
+    return "";
+}
