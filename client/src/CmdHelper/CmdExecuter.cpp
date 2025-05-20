@@ -27,10 +27,10 @@ void CmdHelper::login_execute(const std::vector<std::string>& arg){
         logout();
     }
     else if(arg[0] == "upload"){
-        // upload();
+        upload();
     }
     else if(arg[0] == "download"){
-        // download();
+        download();
     }
     else{
         std::cout << "존재하지 않는 명령어입니다." << std::endl;
@@ -63,7 +63,7 @@ void CmdHelper::local_execute(const std::vector<std::string>& arg){
         rmdir(arg);
     }
     else if(arg[0] == "set"){
-
+        set(arg);
     }
     else{
         std::cout << "존재하지 않는 명령어입니다." << std::endl;
@@ -84,9 +84,43 @@ void CmdHelper::server_execute(const std::vector<std::string>& arg){
 
     }
     else if(arg[0] == "set"){
-        
+        set(arg);
     }
     else{
         std::cout << "존재하지 않는 명령어입니다." << std::endl;
+    }
+}
+
+void CmdHelper::upload(){
+    file_state = 1;
+}
+
+void CmdHelper::download(){
+    file_state = 2;
+}
+
+void CmdHelper::set(const std::vector<std::string>& arg){
+    if(load_state){
+        std::cout << "업로드 / 다운로드 상태 오류" << std::endl;
+    }
+
+    if(file_state == 1){
+        if(load_state == 1){
+            set_upload_file(arg);
+        }
+        else{
+            set_download_file(arg);
+        }
+    }
+    else if(file_state == 2){
+        if(load_state == 1){
+            set_upload_dir(arg);
+        }
+        else {
+            set_download_dir(arg);
+        }   
+    }
+    else{
+        std::cout << "파일 상태 오류" << std::endl;
     }
 }

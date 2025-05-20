@@ -21,11 +21,15 @@ private:
     void mkdir(const std::vector<std::string>& arg);
     void rmdir(const std::vector<std::string>& arg);
     void ls();
+    void set_upload_file(const std::vector<std::string>& arg);
+    void set_download_dir(const std::vector<std::string>& arg);
 
     void server_cd(const std::vector<std::string>& arg);
     void server_mkdir(const std::vector<std::string>& arg);
     void server_rmdir(const std::vector<std::string>& arg);
     void server_ls();
+    void set_download_file(const std::vector<std::string>& arg);
+    void set_upload_dir(const std::vector<std::string>& arg);
 
     void sign_in(const std::vector<std::string>& arg);
     void sign_up(const std::vector<std::string>& arg);
@@ -34,8 +38,13 @@ private:
     void upload();
     void download();
 
+    void set(const std::vector<std::string>& arg);
+
     bool logged_in = 0;
     int8_t file_state = 0;
     int8_t load_state = 0;
+
+    std::string local_path;
+    std::string server_path;
     boost::asio::io_context& m_io_context;
 };
