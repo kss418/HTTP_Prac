@@ -6,11 +6,16 @@ CmdHelper::CmdHelper(boost::asio::io_context& io_context)
 }
 
 void CmdHelper::get_cmd(){
-    auto cwd = FsHelper::get_instance().cwd().string();
-    if(cwd.back() == '/' && cwd.size() > 1){
-        cwd.pop_back();
+    if(logged_in){
+        auto cwd = FsHelper::get_instance().cwd().string();
+        if(cwd.back() == '/' && cwd.size() > 1){
+            cwd.pop_back();
+        }
+        std::cout << cwd << "$ ";
     }
-    std::cout << cwd << "$ ";
+    else{
+        std::cout << "> ";
+    }
 
     std::string input;
     std::getline(std::cin, input);
@@ -40,32 +45,3 @@ std::vector<std::string> CmdHelper::parse_cmd(const std::string& input){
     return arg;
 }
 
-void CmdHelper::execute_cmd(const std::vector<std::string>& arg){
-    if(arg.size() == 0){
-        return;
-    }
-
-    if(arg[0] == "cd"){
-        cd(arg);
-    }
-    else if(arg[0] == "mkdir"){
-        mkdir(arg);
-    }
-    else if(arg[0] == "ls"){
-        ls();
-    }
-    else if(arg[0] == "rmdir"){
-        rmdir(arg);
-    }
-    else if(arg[0] == "login"){
-        sign_in(arg);
-    }
-    else if(arg[0] == "register"){
-        sign_up(arg);
-    }
-
-    else{
-        std::cout << "존재하지 않는 명령어입니다." << std::endl;
-    }
-    
-}

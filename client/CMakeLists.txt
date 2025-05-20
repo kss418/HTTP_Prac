@@ -4,6 +4,7 @@ add_executable(client
     src/FsHelper.cpp
     src/Session.cpp
     src/SessionHandler.cpp
+    src/CmdExecuter.cpp;
     main.cpp
 )
 
