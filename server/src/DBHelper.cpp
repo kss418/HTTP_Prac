@@ -26,7 +26,7 @@ std::string hash(const std::string& pw){
         ret.push_back(tf(tmp[i] / 16));
         ret.push_back(tf(tmp[i] % 16));
     }
-    
+
     return ret;
 }   
 
@@ -89,6 +89,10 @@ bool DBHelper::match_pw(const std::string& id, const std::string& pw){
 }
 
 bool DBHelper::create_id(const std::string& id, const std::string& pw){
+    if(id.size() > 20){
+        return 0;
+    }
+    
     std::unique_ptr<sql::PreparedStatement> select_query(
         connection->prepareStatement(
             "SELECT pw FROM users WHERE id = ?"
