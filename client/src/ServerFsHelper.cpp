@@ -85,10 +85,11 @@ void ServerFsHelper::cd(
 
     auto json = nlohmann::json::parse(res.body());
     bool ret = json.value("result", 0);
+    std::string ret_path = json.value("path", "");
     if(!ret){
         std::cout << "대상 디렉토리가 없습니다." << std::endl;
     }
     else{
-        set_cwd(path);
+        set_cwd(ret_path);
     }
 }

@@ -82,7 +82,8 @@ void Session::execute_request(){
     }
     else if(method == http::verb::post && path == "/cd"){
         bool ret = Service::cd(json);
-        write(http::status::ok, {{"result", ret}});
+        std::string cwd = Service::cwd(json);
+        write(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
     else if(method == http::verb::get && path == "/ls"){
         // Service::ls(json);
