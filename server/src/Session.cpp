@@ -63,7 +63,8 @@ void Session::execute_request(){
     nlohmann::json json = nlohmann::json::parse(m_req.body());
     if(method == http::verb::post && path == "/login"){
         bool ret = Service::sign_in(json);
-        write(http::status::ok, {{"result", ret}});
+        std::string cwd = Service::cwd(json);
+        write(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
     else if(method == http::verb::post && path == "/register"){
         bool ret = Service::sign_up(json);
@@ -71,15 +72,20 @@ void Session::execute_request(){
     }
     else if(method == http::verb::post && path == "/mkdir"){
         bool ret = Service::mkdir(json);
-        write(http::status::ok, {{"result", ret}});
+        std::string cwd = Service::cwd(json);
+        write(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
     else if(method == http::verb::post && path == "/rmdir"){
-
+        // bool ret = Service::rmdir(json);
+        std::string cwd = Service::cwd(json);
+        // write(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
     else if(method == http::verb::post && path == "/cd"){
-
+        bool ret = Service::cd(json);
+        write(http::status::ok, {{"result", ret}});
     }
     else if(method == http::verb::get && path == "/ls"){
-
+        // Service::ls(json);
+        // write(http::status::ok, {});
     }
 }

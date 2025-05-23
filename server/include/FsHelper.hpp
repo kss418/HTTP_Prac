@@ -9,7 +9,7 @@ public:
     FsExecuter(const std::string& id);
     std::filesystem::path cwd() const;
     bool exists(const std::filesystem::path& cwd) const;
-    void set_cwd(const std::filesystem::path& cwd);
+    bool set_cwd(const std::filesystem::path& cwd);
     bool mkdir(const std::filesystem::path& cwd);
     void rmdir(const std::filesystem::path& cwd);
     void ls() const;

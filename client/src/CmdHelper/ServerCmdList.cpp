@@ -4,7 +4,12 @@
 #include <iostream>
 
 void CmdHelper::server_cd(const std::vector<std::string>& arg){
-
+    if(arg.size() == 1){
+        std::cout << "인자가 없습니다." << std::endl;
+        return;
+    }
+    auto& fs = ServerFsHelper::get_instance();
+    fs.cd(arg[1], m_io_context);
 }
 
 void CmdHelper::server_mkdir(const std::vector<std::string>& arg){
@@ -13,7 +18,7 @@ void CmdHelper::server_mkdir(const std::vector<std::string>& arg){
         return;
     }
     auto& fs = ServerFsHelper::get_instance();
-    fs.mkdir(arg[1], id, m_io_context);
+    fs.mkdir(arg[1], m_io_context);
 }
 
 void CmdHelper::server_rmdir(const std::vector<std::string>& arg){

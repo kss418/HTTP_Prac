@@ -1,4 +1,6 @@
 #include "../../include/CmdHelper.hpp"
+#include "../../include/FsHelper.hpp"
+#include "../../include/ServerFsHelper.hpp"
 #include <iostream>
 
 CmdHelper::CmdHelper(boost::asio::io_context& io_context) 
@@ -6,7 +8,10 @@ CmdHelper::CmdHelper(boost::asio::io_context& io_context)
 }
 
 void CmdHelper::get_cmd(){
-    if(logged_in){
+    if(!logged_in){
+        std::cout << "> ";
+    }
+    else if(!path_state){
         auto cwd = FsHelper::get_instance().cwd().string();
         if(cwd.back() == '/' && cwd.size() > 1){
             cwd.pop_back();
@@ -14,7 +19,11 @@ void CmdHelper::get_cmd(){
         std::cout << cwd << "$ ";
     }
     else{
-        std::cout << "> ";
+        auto cwd = ServerFsHelper::get_instance().cwd().string();
+        if(cwd.back() == '/' && cwd.size() > 1){
+            cwd.pop_back();
+        }
+        std::cout << cwd << "$ ";
     }
 
     std::string input;

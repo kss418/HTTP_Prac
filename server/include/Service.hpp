@@ -8,6 +8,14 @@ namespace Service{
 
     bool sign_in(json json);
     bool sign_up(json json);
+
     bool mkdir(json json);
+    bool cd(json json);
+    void ls(json json);
+    bool rm(json json);
+    bool rmdir(json json);
+
+    std::string cwd(json json);
+
     std::string download(json json);
 };

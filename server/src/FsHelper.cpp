@@ -1,4 +1,5 @@
 #include "../include/FsHelper.hpp"
+#include <iostream>
 
 std::once_flag FsHelper::m_init_flag;
 std::unique_ptr<FsHelper> FsHelper::m_instance;
@@ -22,13 +23,14 @@ bool FsExecuter::exists(const std::filesystem::path& cwd) const{
     return std::filesystem::exists(cwd);
 }
 
-void FsExecuter::set_cwd(const std::filesystem::path& cwd){
+bool FsExecuter::set_cwd(const std::filesystem::path& cwd){
     m_working_path = cwd;
+    return 1;
 }
 
 bool FsExecuter::mkdir(const std::filesystem::path& cwd){
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    return !std::filesystem::create_directories(path);
+    return std::filesystem::create_directories(path);
 }
 
 void FsExecuter::rmdir(const std::filesystem::path& cwd){

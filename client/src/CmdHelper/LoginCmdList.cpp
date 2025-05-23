@@ -1,5 +1,7 @@
 #include "../../include/CmdHelper.hpp"
 #include "../../include/Session.hpp"
+#include "../../include/FsHelper.hpp"
+#include "../../include/ServerFsHelper.hpp"
 #include <iostream>
 
 void CmdHelper::sign_in(const std::vector<std::string>& arg){
@@ -26,12 +28,15 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
 
     nlohmann::json json = nlohmann::json::parse(res.body());
     bool ret = json.value("result", 0);
+    std::string path = json.value("path", "");
     if(!ret){
         std::cout << "아이디 또는 비밀번호가 일치하지 않습니다." << std::endl;
     }
     else{
         std::cout << "로그인 성공" << std::endl;
-        id = arg[1];
+        auto& fs = ServerFsHelper::get_instance();
+        fs.set_cwd(path);
+        fs.set_id(arg[1]);
         logged_in = 1;
     }
 }

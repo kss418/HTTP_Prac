@@ -64,16 +64,16 @@ void CmdHelper::local_execute(const std::vector<std::string>& arg){
 
 void CmdHelper::server_execute(const std::vector<std::string>& arg){
     if(arg[0] == "cd"){
-
+        server_cd(arg);
     }
     else if(arg[0] == "ls"){
-
+        server_ls();
     }
     else if(arg[0] == "mkdir"){
         server_mkdir(arg);
     }
     else if(arg[0] == "rmdir"){
-
+        server_rmdir(arg);
     }
     else if(arg[0] == "change"){
         change();

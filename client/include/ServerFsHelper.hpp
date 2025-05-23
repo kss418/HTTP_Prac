@@ -10,12 +10,27 @@ public:
 
     std::filesystem::path cwd() const;
     void set_cwd(const std::filesystem::path& cwd);
+    void set_id(const std::string& id);
+
     void mkdir(
-        const std::filesystem::path& path, const std::string& id,
+        const std::filesystem::path& path,
         boost::asio::io_context& io_context
     );
-    void rmdir(const std::filesystem::path& cwd);
-    void ls() const;
+
+    void rmdir(
+        const std::filesystem::path& path,
+        boost::asio::io_context& io_context
+    );
+
+    void ls(
+        const std::string& id,
+        boost::asio::io_context& io_context
+    ) const;
+    
+    void cd(
+        const std::filesystem::path& path,
+        boost::asio::io_context& io_context
+    );
 
     ServerFsHelper() = default;
     ServerFsHelper(const ServerFsHelper&) = delete;
@@ -24,6 +39,7 @@ public:
     ServerFsHelper& operator=(ServerFsHelper&&) = delete;
 private:
     std::filesystem::path m_working_path;
+    std::string m_id;
     static std::once_flag m_init_flag;
     static std::unique_ptr<ServerFsHelper> m_instance;
 };
