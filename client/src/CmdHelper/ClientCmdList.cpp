@@ -63,7 +63,7 @@ void CmdHelper::set_upload_file(const std::vector<std::string>& arg){
     }
     
     local_path = next_path;
-    file_state = 2;
+
 }
 
 void CmdHelper::set_download_dir(const std::vector<std::string>& arg){
@@ -96,5 +96,9 @@ void CmdHelper::set_download_dir(const std::vector<std::string>& arg){
 
     local_path.clear();
     server_path.clear();
-    file_state = 0;
+
+}
+
+void CmdHelper::change(){
+    path_state ^= 1;
 }

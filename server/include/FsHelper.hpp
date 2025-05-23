@@ -10,7 +10,7 @@ public:
     std::filesystem::path cwd() const;
     bool exists(const std::filesystem::path& cwd) const;
     void set_cwd(const std::filesystem::path& cwd);
-    void mkdir(const std::filesystem::path& cwd);
+    bool mkdir(const std::filesystem::path& cwd);
     void rmdir(const std::filesystem::path& cwd);
     void ls() const;
 private:
@@ -20,6 +20,7 @@ private:
 class FsHelper{
 public:
     static FsHelper& get_instance();
+    std::unordered_map<std::string, std::unique_ptr<FsExecuter>> m_map;
 
     FsHelper() = default;
     FsHelper(const FsHelper&) = delete;
@@ -29,5 +30,4 @@ public:
 private:
     static std::once_flag m_init_flag;
     static std::unique_ptr<FsHelper> m_instance;
-    std::unordered_map<std::string, std::unique_ptr<FsExecuter>> m_map;
 };

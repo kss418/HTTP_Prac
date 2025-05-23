@@ -1,5 +1,6 @@
 #include "../include/Session.hpp"
 #include "../include/Service.hpp"
+#include "../include/FsHelper.hpp"
 #include <iostream>
 
 Session::Session(std::shared_ptr<tcp::socket> socket)
@@ -68,5 +69,17 @@ void Session::execute_request(){
         bool ret = Service::sign_up(json);
         write(http::status::ok, {{"result", ret}});
     }
+    else if(method == http::verb::post && path == "/mkdir"){
+        bool ret = Service::mkdir(json);
+        write(http::status::ok, {{"result", ret}});
+    }
+    else if(method == http::verb::post && path == "/rmdir"){
 
+    }
+    else if(method == http::verb::post && path == "/cd"){
+
+    }
+    else if(method == http::verb::get && path == "/ls"){
+
+    }
 }

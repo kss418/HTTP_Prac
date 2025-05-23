@@ -38,11 +38,10 @@ private:
     void upload();
     void download();
 
-    void set(const std::vector<std::string>& arg);
+    void change();
 
     bool logged_in = 0;
-    int8_t file_state = 0;
-    int8_t load_state = 0;
+    bool path_state = 0;
 
     std::string id;
     std::string local_path;

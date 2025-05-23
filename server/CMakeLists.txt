@@ -4,6 +4,7 @@ add_executable(server
     src/SessionHandler.cpp
     src/Acceptor.cpp
     src/Service.cpp
+    src/FsHelper.cpp
     main.cpp
 )
 

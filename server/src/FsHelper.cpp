@@ -7,10 +7,11 @@ FsHelper& FsHelper::get_instance(){
     std::call_once(m_init_flag, [](){
         m_instance = std::make_unique<FsHelper>();
     });
+    return *m_instance;
 }
 
 FsExecuter::FsExecuter(const std::string& id)
-  :  m_working_path(std::filesystem::current_path().root_directory() / id){  
+  :  m_working_path(std::filesystem::current_path().root_directory() / "home" / "kss418" / id){  
 }
 
 std::filesystem::path FsExecuter::cwd() const{
@@ -23,14 +24,12 @@ bool FsExecuter::exists(const std::filesystem::path& cwd) const{
 
 void FsExecuter::set_cwd(const std::filesystem::path& cwd){
     m_working_path = cwd;
-};
+}
 
-void FsExecuter::mkdir(const std::filesystem::path& cwd){
+bool FsExecuter::mkdir(const std::filesystem::path& cwd){
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    if(!std::filesystem::create_directories(path)){
-        // std::cout << "이미 존재하는 디렉토리입니다." << std::endl;
-    }
-};
+    return !std::filesystem::create_directories(path);
+}
 
 void FsExecuter::rmdir(const std::filesystem::path& cwd){
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
@@ -43,8 +42,8 @@ void FsExecuter::rmdir(const std::filesystem::path& cwd){
     else if(!std::filesystem::remove_all(path)){
         // std::cout << "빈 디렉토리가 아닙니다." << std::endl;
     }
-};
+}
 
 void FsExecuter::ls() const{
 
-};
+}
