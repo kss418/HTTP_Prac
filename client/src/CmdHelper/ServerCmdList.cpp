@@ -26,12 +26,10 @@ void CmdHelper::server_rmdir(const std::vector<std::string>& arg){
 }
 
 void CmdHelper::server_ls(){
-    std::promise <http::response<http::string_body>> prom;
-    std::future <http::response<http::string_body>> fut = prom.get_future();
-    Session session(
-        m_io_context, "127.0.0.1", 8080, 
-        prom, http::verb::post, "/ls", {{"id", id}}
-    );
+    auto& fs = ServerFsHelper::get_instance();
+    for(auto& [file_name, is_dir] : fs.ls(m_io_context)){
+
+    }
 }
 
 void CmdHelper::set_download_file(const std::vector<std::string>& arg){

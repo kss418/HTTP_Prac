@@ -2,6 +2,7 @@
 #include <boost/beast.hpp>
 #include <nlohmann/json.hpp>
 #include <filesystem>
+#include <vector>
 
 namespace Service{
     using json = nlohmann::json;
@@ -11,7 +12,7 @@ namespace Service{
 
     bool mkdir(json json);
     bool cd(json json);
-    void ls(json json);
+    std::vector<std::pair<std::string, bool>> ls(json json);
     bool rm(json json);
     bool rmdir(json json);
 

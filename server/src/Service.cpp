@@ -65,6 +65,20 @@ std::string Service::cwd(json json){
     return (fs.m_map[id])->cwd();
 }
 
+std::vector<std::pair<std::string, bool>> Service::ls(json json){
+    auto& fs = FsHelper::get_instance();
+    std::string id = json.value("id", "");
+    if(fs.m_map.find(id) == fs.m_map.end()){
+        fs.m_map[id] = std::make_unique<FsExecuter>(id);
+    }
+
+    std::vector<std::pair<std::string, bool>> ret;
+    for(const auto& cur : std::filesystem::directory_iterator((fs.m_map[id])->cwd())){
+        ret.push_back({cur.path().filename().string(), cur.is_directory()});
+    }
+    return ret;
+}
+
 std::string Service::download(json json){
     return "";
 }

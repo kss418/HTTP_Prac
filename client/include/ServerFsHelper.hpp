@@ -2,6 +2,7 @@
 #include <memory>
 #include <mutex>
 #include <filesystem>
+#include <vector>
 #include <boost/asio.hpp>
 
 class ServerFsHelper{
@@ -22,10 +23,9 @@ public:
         boost::asio::io_context& io_context
     );
 
-    void ls(
-        const std::string& id,
+    std::vector<std::pair<std::string, bool>> ls(
         boost::asio::io_context& io_context
-    ) const;
+    );
     
     void cd(
         const std::filesystem::path& path,

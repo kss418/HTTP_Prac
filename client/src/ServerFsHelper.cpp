@@ -93,3 +93,30 @@ void ServerFsHelper::cd(
         set_cwd(ret_path);
     }
 }
+
+std::vector<std::pair<std::string, bool>> ServerFsHelper::ls(
+    boost::asio::io_context& io_context
+){
+    std::promise <http::response<http::string_body>> prom;
+    std::future <http::response<http::string_body>> fut = prom.get_future();
+    Session session(
+        io_context, "127.0.0.1", 8080, 
+        prom, http::verb::get, "/ls?id=" + m_id
+    );
+
+    http::response <http::string_body> res = fut.get();
+    if(res.result() != http::status::ok){
+        std::cout << "Status code : " << res.result() << std::endl;
+        return {};
+    }
+
+    if(!nlohmann::json::accept(res.body())){
+        std::cout << "서버 응답 파싱 불가" << std::endl;
+        return {};
+    }
+
+    auto json = nlohmann::json::parse(res.body());
+    std::cout << json << std::endl;
+    auto ret = json["result"].get<std::vector<std::pair<std::string, bool>>>();
+    return ret;
+}

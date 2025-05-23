@@ -53,7 +53,7 @@ void Session::execute_request(){
     std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
     std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
 
-    if(!nlohmann::json::accept(m_req.body())){
+    if(method != http::verb::get && !nlohmann::json::accept(m_req.body())){
         std::cout << "파싱 불가" << std::endl;
         std::cout << m_req.body() << std::endl;
         write(http::status::bad_request);
@@ -86,7 +86,9 @@ void Session::execute_request(){
         write(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
     else if(method == http::verb::get && path == "/ls"){
-        // Service::ls(json);
-        // write(http::status::ok, {});
+        std::string id = arg.substr(3);
+        std::cout << id << std::endl;
+        std::vector<std::pair<std::string, bool>> ret = Service::ls(id);
+        write(http::status::ok, {"result", ret});
     }
 }
