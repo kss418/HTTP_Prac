@@ -53,6 +53,9 @@ void Session::execute_request(){
     std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
     std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
 
+    std::cout << path << std::endl;
+    std::cout << arg << std::endl;
+    std::cout << m_req.body() << std::endl;
     if(method != http::verb::get && !nlohmann::json::accept(m_req.body())){
         std::cout << "파싱 불가" << std::endl;
         std::cout << m_req.body() << std::endl;
@@ -60,7 +63,7 @@ void Session::execute_request(){
         return;
     }
 
-    nlohmann::json json = nlohmann::json::parse(m_req.body());
+    nlohmann::json json = (method != http::verb::get ? nlohmann::json::parse(m_req.body()) : json.object());
     if(method == http::verb::post && path == "/login"){
         bool ret = Service::sign_in(json);
         std::string cwd = Service::cwd(json);
@@ -86,7 +89,7 @@ void Session::execute_request(){
         write(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
     else if(method == http::verb::get && path == "/ls"){
-        std::string id = arg.substr(3);
+        std::string id = arg.substr(4);
         std::cout << id << std::endl;
         std::vector<std::pair<std::string, bool>> ret = Service::ls(id);
         write(http::status::ok, {"result", ret});

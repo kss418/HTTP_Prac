@@ -12,7 +12,7 @@ namespace Service{
 
     bool mkdir(json json);
     bool cd(json json);
-    std::vector<std::pair<std::string, bool>> ls(json json);
+    std::vector<std::pair<std::string, bool>> ls(const std::string& id);
     bool rm(json json);
     bool rmdir(json json);
 

@@ -65,9 +65,8 @@ std::string Service::cwd(json json){
     return (fs.m_map[id])->cwd();
 }
 
-std::vector<std::pair<std::string, bool>> Service::ls(json json){
+std::vector<std::pair<std::string, bool>> Service::ls(const std::string& id){
     auto& fs = FsHelper::get_instance();
-    std::string id = json.value("id", "");
     if(fs.m_map.find(id) == fs.m_map.end()){
         fs.m_map[id] = std::make_unique<FsExecuter>(id);
     }
