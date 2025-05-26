@@ -27,8 +27,14 @@ void CmdHelper::server_rmdir(const std::vector<std::string>& arg){
 
 void CmdHelper::server_ls(){
     auto& fs = ServerFsHelper::get_instance();
-    for(auto& [file_name, is_dir] : fs.ls(m_io_context)){
-
+    for(const auto& [file_name, is_dir] : fs.ls(m_io_context)){
+        if(is_dir){
+            std::cout << "[DIR] ";
+        }
+        else{
+            std::cout << "[FILE] ";
+        }
+        std::cout << file_name << std::endl;
     }
 }
 

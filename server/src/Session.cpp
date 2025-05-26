@@ -91,7 +91,6 @@ void Session::execute_request(){
     else if(method == http::verb::get && path == "/ls"){
         std::string id = arg.substr(4);
         std::cout << id << std::endl;
-        std::vector<std::pair<std::string, bool>> ret = Service::ls(id);
-        write(http::status::ok, {"result", ret});
+        write(http::status::ok, Service::ls(id));
     }
 }

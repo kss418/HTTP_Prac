@@ -65,17 +65,21 @@ std::string Service::cwd(json json){
     return (fs.m_map[id])->cwd();
 }
 
-std::vector<std::pair<std::string, bool>> Service::ls(const std::string& id){
+nlohmann::json Service::ls(const std::string& id){
     auto& fs = FsHelper::get_instance();
     if(fs.m_map.find(id) == fs.m_map.end()){
         fs.m_map[id] = std::make_unique<FsExecuter>(id);
     }
 
-    std::vector<std::pair<std::string, bool>> ret;
+    json json;
+    json["file_name"] = json::array();
+    json["is_dir"] = json::array();
     for(const auto& cur : std::filesystem::directory_iterator((fs.m_map[id])->cwd())){
-        ret.push_back({cur.path().filename().string(), cur.is_directory()});
+        json["file_name"].push_back(cur.path().filename().string());
+        json["is_dir"].push_back(cur.is_directory());
     }
-    return ret;
+
+    return json;
 }
 
 std::string Service::download(json json){

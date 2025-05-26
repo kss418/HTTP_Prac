@@ -116,7 +116,13 @@ std::vector<std::pair<std::string, bool>> ServerFsHelper::ls(
     }
 
     auto json = nlohmann::json::parse(res.body());
-    std::cout << json << std::endl;
-    auto ret = json["result"].get<std::vector<std::pair<std::string, bool>>>();
+    auto file_name = json["file_name"].get<std::vector<std::string>>();
+    auto is_dir = json["is_dir"].get<std::vector<bool>>();
+    
+    std::vector<std::pair<std::string, bool>> ret;
+    for(int i = 0;i < file_name.size();i++){
+        ret.push_back({file_name[i], is_dir[i]});
+    }
+
     return ret;
 }
