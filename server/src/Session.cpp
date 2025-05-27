@@ -45,7 +45,7 @@ void Session::write(http::status status, const nlohmann::json& json){
     );
 }
 
-void Session::file_write(http::status status, const std::filesystem::path& path){
+void Session::write_file(http::status status, const std::filesystem::path& path){
     auto& fs = FsHelper::get_instance();
     boost::beast::error_code ec;
 
@@ -125,7 +125,10 @@ void Session::execute_request(){
     }
     else if(method == http::verb::get && path == "/ls"){
         std::string id = arg.substr(4);
-        std::cout << id << std::endl;
         write(http::status::ok, Service::ls(id));
+    }
+    else if(method == http::verb::get && path == "/download"){
+        std::string path = arg.substr(6);
+        write_file(http::status::ok, path);
     }
 }

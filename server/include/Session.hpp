@@ -18,7 +18,7 @@ private:
     http::request <http::string_body> m_req;
 
     void write(http::status status, const nlohmann::json& json = {});
-    void file_write(http::status status, const std::filesystem::path& path = "");
+    void write_file(http::status status, const std::filesystem::path& path = "");
     void execute_request();
     
     void handle_write(const boost::system::error_code& ec);

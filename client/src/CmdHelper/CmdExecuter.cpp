@@ -18,6 +18,12 @@ void CmdHelper::login_execute(const std::vector<std::string>& arg){
     if(arg[0] == "logout"){
         logout();
     }
+    else if(arg[0] == "download"){
+
+    }
+    else if(arg[0] == "upload"){
+
+    }
     else if(!path_state){
         local_execute(arg);
     }
@@ -57,9 +63,6 @@ void CmdHelper::local_execute(const std::vector<std::string>& arg){
     else if(arg[0] == "rm"){
         rm(arg);
     }
-    else if(arg[0] == "upload"){
-
-    }
     else{
         std::cout << "존재하지 않는 명령어입니다." << std::endl;
     }
@@ -83,9 +86,6 @@ void CmdHelper::server_execute(const std::vector<std::string>& arg){
     }
     else if(arg[0] == "change"){
         change();
-    }
-    else if(arg[0] == "download"){
-
     }
     else{
         std::cout << "존재하지 않는 명령어입니다." << std::endl;

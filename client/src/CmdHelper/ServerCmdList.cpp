@@ -52,10 +52,8 @@ void CmdHelper::server_ls(){
     }
 }
 
-void CmdHelper::set_download_file(const std::vector<std::string>& arg){
-
+void CmdHelper::download(const std::vector<std::string>& arg){
+    
 }
 
-void CmdHelper::set_upload_dir(const std::vector<std::string>& arg){
 
-}

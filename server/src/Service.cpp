@@ -100,6 +100,3 @@ int32_t Service::rm(json json){
     return (fs.m_map[id])->rm(path);
 }
 
-std::string Service::download(json json){
-    return "";
-}

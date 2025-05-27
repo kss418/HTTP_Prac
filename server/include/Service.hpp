@@ -17,6 +17,4 @@ namespace Service{
     int32_t rmdir(json json);
 
     std::string cwd(json json);
-
-    std::string download(json json);
 };
