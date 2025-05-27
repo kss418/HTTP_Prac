@@ -41,11 +41,13 @@ int32_t FsExecuter::rmdir(const std::filesystem::path& cwd){
     else if(!std::filesystem::is_directory(path)){
         return 2;
     }
-    else if(!std::filesystem::remove_all(path)){
+    else if(!std::filesystem::is_empty(path)){
         return 3;
     }
-    
-    return 0;
+    else{
+        std::filesystem::remove(path);
+        return 0;
+    }
 }
 
 nlohmann::json FsExecuter::ls() const{

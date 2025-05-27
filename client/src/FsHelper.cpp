@@ -40,8 +40,11 @@ void FsHelper::rmdir(const std::filesystem::path& cwd){
     else if(!std::filesystem::is_directory(path)){
         std::cout << "대상이 디렉토리가 아닙니다." << std::endl;
     }
-    else if(!std::filesystem::remove_all(path)){
+    else if(!std::filesystem::is_empty(path)){
         std::cout << "빈 디렉토리가 아닙니다." << std::endl;
+    }
+    else{
+        std::filesystem::remove(path);
     }
 }
 
