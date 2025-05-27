@@ -3,6 +3,7 @@
 #include <mutex>
 #include <filesystem>
 #include <unordered_map>
+#include <nlohmann/json.hpp>
 
 class FsExecuter{
 public:
@@ -11,8 +12,8 @@ public:
     bool exists(const std::filesystem::path& cwd) const;
     bool set_cwd(const std::filesystem::path& cwd);
     bool mkdir(const std::filesystem::path& cwd);
-    void rmdir(const std::filesystem::path& cwd);
-    void ls() const;
+    int32_t rmdir(const std::filesystem::path& cwd);
+    nlohmann::json ls() const;
 private:
     std::filesystem::path m_working_path;
 };
