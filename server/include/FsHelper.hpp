@@ -13,6 +13,7 @@ public:
     bool set_cwd(const std::filesystem::path& cwd);
     bool mkdir(const std::filesystem::path& cwd);
     int32_t rmdir(const std::filesystem::path& cwd);
+    int32_t rm(const std::filesystem::path& cwd);
     nlohmann::json ls() const;
 private:
     std::filesystem::path m_working_path;

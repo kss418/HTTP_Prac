@@ -87,6 +87,19 @@ int32_t Service::rmdir(json json){
     return (fs.m_map[id])->rmdir(path);
 }
 
+int32_t Service::rm(json json){
+    auto& fs = FsHelper::get_instance();
+    std::string path = json.value("path", "");
+    std::string id = json.value("id", "");
+    if(path.empty()) return -1;
+
+    if(fs.m_map.find(id) == fs.m_map.end()){
+        fs.m_map[id] = std::make_unique<FsExecuter>(id);
+    }
+
+    return (fs.m_map[id])->rm(path);
+}
+
 std::string Service::download(json json){
     return "";
 }

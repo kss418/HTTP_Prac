@@ -23,6 +23,11 @@ public:
         boost::asio::io_context& io_context
     );
 
+    void rm(
+        const std::filesystem::path& path,
+        boost::asio::io_context& io_context
+    );
+
     std::vector<std::pair<std::string, bool>> ls(
         boost::asio::io_context& io_context
     );

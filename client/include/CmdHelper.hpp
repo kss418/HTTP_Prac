@@ -28,6 +28,7 @@ private:
     void server_cd(const std::vector<std::string>& arg);
     void server_mkdir(const std::vector<std::string>& arg);
     void server_rmdir(const std::vector<std::string>& arg);
+    void server_rm(const std::vector<std::string>& arg);
     void server_ls();
     void set_download_file(const std::vector<std::string>& arg);
     void set_upload_dir(const std::vector<std::string>& arg);

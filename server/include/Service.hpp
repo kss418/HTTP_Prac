@@ -13,7 +13,7 @@ namespace Service{
     bool mkdir(json json);
     bool cd(json json);
     json ls(const std::string& id);
-    bool rm(json json);
+    int32_t rm(json json);
     int32_t rmdir(json json);
 
     std::string cwd(json json);

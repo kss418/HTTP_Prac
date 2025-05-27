@@ -81,6 +81,10 @@ void Session::execute_request(){
         int32_t ret = Service::rmdir(json);
         write(http::status::ok, {{"result", ret}});
     }
+    else if(method == http::verb::delete_ && path == "/rm"){
+        int32_t ret = Service::rm(json);
+        write(http::status::ok, {{"result", ret}});
+    }
     else if(method == http::verb::post && path == "/cd"){
         bool ret = Service::cd(json);
         std::string cwd = Service::cwd(json);

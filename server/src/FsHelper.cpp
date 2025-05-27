@@ -50,6 +50,20 @@ int32_t FsExecuter::rmdir(const std::filesystem::path& cwd){
     }
 }
 
+int32_t FsExecuter::rm(const std::filesystem::path& cwd){
+    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
+    if(!std::filesystem::exists(path)){
+        return 1;
+    }
+    else if(std::filesystem::is_directory(path)){
+        return 2;
+    }
+    else{
+        std::filesystem::remove(path);
+        return 0;
+    }
+}
+
 nlohmann::json FsExecuter::ls() const{
     nlohmann::json json;
     json["file_name"] = nlohmann::json::array();

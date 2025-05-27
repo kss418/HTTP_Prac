@@ -30,6 +30,15 @@ void CmdHelper::server_rmdir(const std::vector<std::string>& arg){
     fs.rmdir(arg[1], m_io_context);
 }
 
+void CmdHelper::server_rm(const std::vector<std::string>& arg){
+    if(arg.size() == 1){
+        std::cout << "인자가 없습니다." << std::endl;
+        return;
+    }
+    auto& fs = ServerFsHelper::get_instance();
+    fs.rm(arg[1], m_io_context);
+}
+
 void CmdHelper::server_ls(){
     auto& fs = ServerFsHelper::get_instance();
     for(const auto& [file_name, is_dir] : fs.ls(m_io_context)){

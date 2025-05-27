@@ -78,6 +78,9 @@ void CmdHelper::server_execute(const std::vector<std::string>& arg){
     else if(arg[0] == "rmdir"){
         server_rmdir(arg);
     }
+    else if(arg[0] == "rm"){
+        server_rm(arg);
+    }
     else if(arg[0] == "change"){
         change();
     }
