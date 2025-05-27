@@ -75,13 +75,11 @@ void Session::execute_request(){
     }
     else if(method == http::verb::post && path == "/mkdir"){
         bool ret = Service::mkdir(json);
-        std::string cwd = Service::cwd(json);
-        write(http::status::ok, {{"result", ret}, {"path", cwd}});
+        write(http::status::ok, {{"result", ret}});
     }
-    else if(method == http::verb::post && path == "/rmdir"){
-        // bool ret = Service::rmdir(json);
-        std::string cwd = Service::cwd(json);
-        // write(http::status::ok, {{"result", ret}, {"path", cwd}});
+    else if(method == http::verb::delete_ && path == "/rmdir"){
+        int32_t ret = Service::rmdir(json);
+        write(http::status::ok, {{"result", ret}});
     }
     else if(method == http::verb::post && path == "/cd"){
         bool ret = Service::cd(json);
