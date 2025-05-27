@@ -33,19 +33,29 @@ bool FsExecuter::mkdir(const std::filesystem::path& cwd){
     return std::filesystem::create_directories(path);
 }
 
-void FsExecuter::rmdir(const std::filesystem::path& cwd){
+int32_t FsExecuter::rmdir(const std::filesystem::path& cwd){
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
     if(!std::filesystem::exists(path)){
-        // std::cout << "대상 디렉토리가 존재하지 않습니다." << std::endl;
+        return 1;
     }
     else if(!std::filesystem::is_directory(path)){
-        // std::cout << "대상이 디렉토리가 아닙니다." << std::endl;
+        return 2;
     }
     else if(!std::filesystem::remove_all(path)){
-        // std::cout << "빈 디렉토리가 아닙니다." << std::endl;
+        return 3;
     }
+    
+    return 0;
 }
 
-void FsExecuter::ls() const{
+nlohmann::json FsExecuter::ls() const{
+    nlohmann::json json;
+    json["file_name"] = nlohmann::json::array();
+    json["is_dir"] = nlohmann::json::array();
+    for(const auto& cur : std::filesystem::directory_iterator(cwd())){
+        json["file_name"].push_back(cur.path().filename().string());
+        json["is_dir"].push_back(cur.is_directory());
+    }
 
+    return json;
 }
