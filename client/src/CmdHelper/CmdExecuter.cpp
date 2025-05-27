@@ -54,6 +54,9 @@ void CmdHelper::local_execute(const std::vector<std::string>& arg){
     else if(arg[0] == "change"){
         change();
     }
+    else if(arg[0] == "rm"){
+        rm(arg);
+    }
     else if(arg[0] == "upload"){
 
     }

@@ -12,6 +12,7 @@ public:
     void set_cwd(const std::filesystem::path& cwd);
     void mkdir(const std::filesystem::path& cwd);
     void rmdir(const std::filesystem::path& cwd);
+    void rm(const std::filesystem::path& cwd);
     void ls() const;
 
     FsHelper() = default;

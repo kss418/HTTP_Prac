@@ -48,6 +48,19 @@ void FsHelper::rmdir(const std::filesystem::path& cwd){
     }
 }
 
+void FsHelper::rm(const std::filesystem::path& cwd){
+    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
+    if(!std::filesystem::exists(path)){
+        std::cout << "대상 파일이 존재하지 않습니다." << std::endl;
+    }
+    else if(std::filesystem::is_directory(path)){
+        std::cout << "대상이 파일이 아닙니다." << std::endl;
+    }
+    else{
+        std::filesystem::remove(path);
+    }
+}
+
 void FsHelper::ls() const{
     for(const auto& cur : std::filesystem::directory_iterator(m_working_path)){
         if(cur.is_directory()){

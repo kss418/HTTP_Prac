@@ -99,6 +99,11 @@ void CmdHelper::set_download_dir(const std::vector<std::string>& arg){
 
 }
 
+void CmdHelper::rm(const std::vector<std::string>& arg){
+    auto& fs = FsHelper::get_instance();
+    fs.rm(arg[1]);
+}
+
 void CmdHelper::change(){
     path_state ^= 1;
 }

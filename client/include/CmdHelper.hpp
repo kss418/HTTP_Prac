@@ -20,6 +20,7 @@ private:
     void cd(const std::vector<std::string>& arg);
     void mkdir(const std::vector<std::string>& arg);
     void rmdir(const std::vector<std::string>& arg);
+    void rm(const std::vector<std::string>& arg);
     void ls();
     void set_upload_file(const std::vector<std::string>& arg);
     void set_download_dir(const std::vector<std::string>& arg);
