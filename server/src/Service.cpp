@@ -1,87 +1,94 @@
+#include "../include/Session.hpp"
 #include "../include/Service.hpp"
-#include "../include/DBHelper.hpp"
 #include "../include/FsHelper.hpp"
 #include <iostream>
 
-bool Service::sign_in(json json){
-    auto& db_helper = DBHelper::get_instance();
-    std::string id = json.value("id", "");
-    std::string pw = json.value("pw", "");
-    
-    std::cout << "로그인 / id = " << id << std::endl;
-    return db_helper.match_pw(id, pw);
+Session::Session(std::shared_ptr<tcp::socket> socket)
+  :  m_socket(std::move(socket)){
 }
 
-bool Service::sign_up(json json){
-    auto& db_helper = DBHelper::get_instance();
-    std::string id = json.value("id", "");
-    std::string pw = json.value("pw", "");
-
-    std::cout << "회원가입 / id = " << id << std::endl;
-    if(id.empty() || pw.empty()){
-        return 0;
-    }
-    
-    return db_helper.create_id(id, pw);
+void Session::read(){
+    http::async_read(
+        *m_socket,
+        m_buffer,
+        m_req,
+        [self = shared_from_this()](
+            const boost::system::error_code& ec,
+            std::size_t bytes_transferred
+        ){
+            self->handle_read(ec);
+        }
+    );
 }
 
-bool Service::mkdir(json json){
-    auto& fs = FsHelper::get_instance();
-    std::string path = json.value("path", "");
-    std::string id = json.value("id", "");
-    
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
+void Session::write(http::status status, const nlohmann::json& json){
+    auto res = std::make_shared<http::response<http::string_body>>(
+        status, m_req.version()
+    );
+    res->set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+
+    std::string body = json.dump();
+    if(!body.empty()){
+        res->body() = body;
+        res->prepare_payload();
     }
 
-    std::cout << "mkdir / id = " << id << " path = " << path << std::endl;
-    return (fs.m_map[id])->mkdir(path);
+    http::async_write(
+        *m_socket,
+        *res,
+        [self = shared_from_this(), res](
+            const boost::system::error_code& ec,
+            std::size_t bytes_transffered
+        ){
+            self->handle_write(ec);
+        }
+    );
 }
 
-bool Service::cd(json json){
-    auto& fs = FsHelper::get_instance();
-    std::string id = json.value("id", "");
-    std::filesystem::path path = json.value("path", "");
-    
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
-    }
-    std::filesystem::path next_path = ((fs.m_map[id])->cwd() / path).lexically_normal();
+void Session::execute_request(){
+    auto method = m_req.method();
+    auto target = m_req.target();
 
-    std::cout << "cd / id = " << id << " path = " << next_path << std::endl;
-    if(!(fs.m_map[id])->exists(next_path)){
-        return 0;
-    }
-    return (fs.m_map[id])->set_cwd(next_path);
-}
+    auto pos_q = target.find('?');
+    std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
+    std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
 
-std::string Service::cwd(json json){
-    auto& fs = FsHelper::get_instance();
-    std::string id = json.value("id", "");
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
+    std::cout << path << std::endl;
+    std::cout << arg << std::endl;
+    std::cout << m_req.body() << std::endl;
+    if(method != http::verb::get && !nlohmann::json::accept(m_req.body())){
+        std::cout << "파싱 불가" << std::endl;
+        std::cout << m_req.body() << std::endl;
+        write(http::status::bad_request);
+        return;
     }
 
-    return (fs.m_map[id])->cwd();
-}
-
-nlohmann::json Service::ls(const std::string& id){
-    auto& fs = FsHelper::get_instance();
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
+    nlohmann::json json = (method != http::verb::get ? nlohmann::json::parse(m_req.body()) : json.object());
+    if(method == http::verb::post && path == "/login"){
+        bool ret = Service::sign_in(json);
+        std::string cwd = Service::cwd(json);
+        write(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
-
-    json json;
-    json["file_name"] = json::array();
-    json["is_dir"] = json::array();
-    for(const auto& cur : std::filesystem::directory_iterator((fs.m_map[id])->cwd())){
-        json["file_name"].push_back(cur.path().filename().string());
-        json["is_dir"].push_back(cur.is_directory());
+    else if(method == http::verb::post && path == "/register"){
+        bool ret = Service::sign_up(json);
+        write(http::status::ok, {{"result", ret}});
     }
-
-    return json;
-}
-
-std::string Service::download(json json){
-    return "";
+    else if(method == http::verb::post && path == "/mkdir"){
+        bool ret = Service::mkdir(json);
+        write(http::status::ok, {{"result", ret}});
+    }
+    else if(method == http::verb::delete_ && path == "/rmdir"){
+        int32_t ret = Service::rmdir(json);
+        write(http::status::ok, {{"result", ret}});
+    }
+    else if(method == http::verb::post && path == "/cd"){
+        bool ret = Service::cd(json);
+        std::string cwd = Service::cwd(json);
+        write(http::status::ok, {{"result", ret}, {"path", cwd}});
+    }
+    else if(method == http::verb::get && path == "/ls"){
+        std::string id = arg.substr(4);
+        std::cout << id << std::endl;
+        write(http::status::ok, Service::ls(id));
+    }
 }
