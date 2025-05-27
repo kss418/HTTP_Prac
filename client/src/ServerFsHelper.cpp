@@ -197,3 +197,21 @@ void ServerFsHelper::rm(
         std::cout << "대상이 파일이 아닙니다." << std::endl;
     }
 }
+
+void ServerFsHelper::download(
+    const std::filesystem::path& cwd,
+    boost::asio::io_context& io_context
+){
+    /*
+    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
+    std::promise <http::response<http::file_body>> prom;
+    std::future <http::response<http::file_body>> fut = prom.get_future();
+    Session session(
+        io_context, "127.0.0.1", 8080, 
+        prom, http::verb::get, "/download?id=" + m_id + "&path" + path.string()
+    );
+    */
+
+
+}
+

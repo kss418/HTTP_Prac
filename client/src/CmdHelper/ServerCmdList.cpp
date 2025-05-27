@@ -53,7 +53,13 @@ void CmdHelper::server_ls(){
 }
 
 void CmdHelper::download(const std::vector<std::string>& arg){
-    
+    if(arg.size() == 1){
+        std::cout << "인자가 없습니다." << std::endl;
+        return;
+    }
+
+    auto& fs = ServerFsHelper::get_instance();
+    fs.download(arg[1], m_io_context);
 }
 
 
