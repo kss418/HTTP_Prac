@@ -6,12 +6,6 @@
 std::once_flag ServerFsHelper::m_init_flag;
 std::unique_ptr<ServerFsHelper> ServerFsHelper::m_instance;
 
-/*  
-    void rmdir(const std::filesystem::path& cwd);
-    void ls() const;
-    void cd()
-*/
-
 ServerFsHelper& ServerFsHelper::get_instance(){
     std::call_once(m_init_flag, [](){
         m_instance = std::make_unique<ServerFsHelper>();
@@ -125,4 +119,44 @@ std::vector<std::pair<std::string, bool>> ServerFsHelper::ls(
     }
 
     return ret;
+}
+
+void ServerFsHelper::rmdir(
+    const std::filesystem::path& cwd,
+    boost::asio::io_context& io_context
+){
+    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
+    std::promise <http::response<http::string_body>> prom;
+    std::future <http::response<http::string_body>> fut = prom.get_future();
+    Session session(
+        io_context, "127.0.0.1", 8080, 
+        prom, http::verb::delete_, "/rmdir", {{"id", m_id}, {"path", path}}
+    );
+
+    http::response <http::string_body> res = fut.get();
+    if(res.result() != http::status::ok){
+        std::cout << "Status code : " << res.result() << std::endl;
+        return;
+    }
+
+    if(!nlohmann::json::accept(res.body())){
+        std::cout << "서버 응답 파싱 불가" << std::endl;
+        return;
+    }
+
+    auto json = nlohmann::json::parse(res.body());
+    int32_t ret = json.value("result", -1);
+
+    if(ret == -1){
+        std::cout << "서버 응답 오류" << std::endl;
+    }
+    else if(ret == 1){
+        std::cout << "대상 디렉토리가 존재하지 않습니다." << std::endl;
+    }
+    else if(ret == 2){
+        std::cout << "대상이 디렉토리가 아닙니다" << std::endl;
+    }
+    else if(ret == 3){
+        std::cout << "빈 디렉토리가 아닙니다." << std::endl;
+    }
 }
