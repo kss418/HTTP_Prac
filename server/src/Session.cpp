@@ -25,13 +25,46 @@ void Session::write(http::status status, const nlohmann::json& json){
     auto res = std::make_shared<http::response<http::string_body>>(
         status, m_req.version()
     );
-    res->set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
+    res->set(http::field::server, BOOST_BEAST_VERSION_STRING);
 
     std::string body = json.dump();
     if(!body.empty()){
         res->body() = body;
         res->prepare_payload();
     }
+
+    http::async_write(
+        *m_socket,
+        *res,
+        [self = shared_from_this(), res](
+            const boost::system::error_code& ec,
+            std::size_t bytes_transffered
+        ){
+            self->handle_write(ec);
+        }
+    );
+}
+
+void Session::file_write(http::status status, const std::filesystem::path& path){
+    auto& fs = FsHelper::get_instance();
+    boost::beast::error_code ec;
+
+    auto res = std::make_shared<http::response<http::file_body>>(
+        http::status::ok, m_req.version()
+    );
+    res->set(http::field::server, BOOST_BEAST_VERSION_STRING);
+    res->body().open(path.c_str(), boost::beast::file_mode::scan, ec);
+
+    if(ec == boost::beast::errc::no_such_file_or_directory){
+        write(http::status::not_found);
+        return;
+    }
+
+    if(ec){
+        write(http::status::internal_server_error);
+        return;
+    }
+    res->prepare_payload();
 
     http::async_write(
         *m_socket,
