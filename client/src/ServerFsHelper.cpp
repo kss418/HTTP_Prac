@@ -30,25 +30,27 @@ void ServerFsHelper::mkdir(
     const std::filesystem::path& path,
     boost::asio::io_context& io_context
 ){
-    std::promise <http::response<http::string_body>> prom;
-    std::future <http::response<http::string_body>> fut = prom.get_future();
+    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
+    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
+
     Session session(
         io_context, "127.0.0.1", 8080, 
         prom, http::verb::post, "/mkdir", {{"id", m_id}, {"path", path}}
     );
 
-    http::response <http::string_body> res = fut.get();
-    if(res.result() != http::status::ok){
-        std::cout << "Status code : " << res.result() << std::endl;
+    
+    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res.body())){
+    if(!nlohmann::json::accept(res->body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
         return;
-    } 
+    }
 
-    auto json = nlohmann::json::parse(res.body());
+    auto json = nlohmann::json::parse(res->body());
     bool ret = json.value("result", 0);
     if(!ret){
         std::cout << "이미 존재하는 디렉토리입니다." << std::endl;
@@ -59,25 +61,26 @@ void ServerFsHelper::cd(
     const std::filesystem::path& path, 
     boost::asio::io_context& io_context
 ){
-    std::promise <http::response<http::string_body>> prom;
-    std::future <http::response<http::string_body>> fut = prom.get_future();
+    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
+    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
+
     Session session(
         io_context, "127.0.0.1", 8080, 
         prom, http::verb::post, "/cd", {{"id", m_id}, {"path", path}}
     );
 
-    http::response <http::string_body> res = fut.get();
-    if(res.result() != http::status::ok){
-        std::cout << "Status code : " << res.result() << std::endl;
+    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res.body())){
+    if(!nlohmann::json::accept(res->body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
         return;
-    } 
+    }
 
-    auto json = nlohmann::json::parse(res.body());
+    auto json = nlohmann::json::parse(res->body());
     bool ret = json.value("result", 0);
     std::string ret_path = json.value("path", "");
     if(!ret){
@@ -91,25 +94,26 @@ void ServerFsHelper::cd(
 std::vector<std::pair<std::string, bool>> ServerFsHelper::ls(
     boost::asio::io_context& io_context
 ){
-    std::promise <http::response<http::string_body>> prom;
-    std::future <http::response<http::string_body>> fut = prom.get_future();
+    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
+    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
+
     Session session(
         io_context, "127.0.0.1", 8080, 
         prom, http::verb::get, "/ls?id=" + m_id
     );
-
-    http::response <http::string_body> res = fut.get();
-    if(res.result() != http::status::ok){
-        std::cout << "Status code : " << res.result() << std::endl;
+    
+    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
         return {};
     }
 
-    if(!nlohmann::json::accept(res.body())){
+    if(!nlohmann::json::accept(res->body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
         return {};
     }
 
-    auto json = nlohmann::json::parse(res.body());
+    auto json = nlohmann::json::parse(res->body());
     auto file_name = json["file_name"].get<std::vector<std::string>>();
     auto is_dir = json["is_dir"].get<std::vector<bool>>();
     
@@ -125,26 +129,26 @@ void ServerFsHelper::rmdir(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
 ){
-    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    std::promise <http::response<http::string_body>> prom;
-    std::future <http::response<http::string_body>> fut = prom.get_future();
+    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
+    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
+
     Session session(
         io_context, "127.0.0.1", 8080, 
-        prom, http::verb::delete_, "/rmdir", {{"id", m_id}, {"path", path}}
+        prom, http::verb::delete_, "/rmdir", {{"id", m_id}, {"path", cwd}}
     );
 
-    http::response <http::string_body> res = fut.get();
-    if(res.result() != http::status::ok){
-        std::cout << "Status code : " << res.result() << std::endl;
+    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res.body())){
+    if(!nlohmann::json::accept(res->body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
         return;
     }
 
-    auto json = nlohmann::json::parse(res.body());
+    auto json = nlohmann::json::parse(res->body());
     int32_t ret = json.value("result", -1);
 
     if(ret == -1){
@@ -165,26 +169,26 @@ void ServerFsHelper::rm(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
 ){
-    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    std::promise <http::response<http::string_body>> prom;
-    std::future <http::response<http::string_body>> fut = prom.get_future();
+    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
+    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
+
     Session session(
         io_context, "127.0.0.1", 8080, 
-        prom, http::verb::delete_, "/rm", {{"id", m_id}, {"path", path}}
+        prom, http::verb::delete_, "/rm", {{"id", m_id}, {"path", cwd}}
     );
-
-    http::response <http::string_body> res = fut.get();
-    if(res.result() != http::status::ok){
-        std::cout << "Status code : " << res.result() << std::endl;
+    
+    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res.body())){
+    if(!nlohmann::json::accept(res->body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
         return;
     }
 
-    auto json = nlohmann::json::parse(res.body());
+    auto json = nlohmann::json::parse(res->body());
     int32_t ret = json.value("result", -1);
 
     if(ret == -1){
@@ -202,16 +206,19 @@ void ServerFsHelper::download(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
 ){
-    /*
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    std::promise <http::response<http::file_body>> prom;
-    std::future <http::response<http::file_body>> fut = prom.get_future();
-    Session session(
+    using ResPtr = std::shared_ptr<
+        http::response<http::file_body>
+    >;
+
+    std::promise <ResPtr> prom;
+    std::future <ResPtr> fut = prom.get_future();
+    auto session = std::make_shared<Session<http::file_body>>(
         io_context, "127.0.0.1", 8080, 
-        prom, http::verb::get, "/download?id=" + m_id + "&path" + path.string()
+        prom, http::verb::get, "/download?id=" + m_id + "&path=" + path.string()
     );
-    */
 
 
 }
+
 

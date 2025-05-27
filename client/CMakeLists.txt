@@ -6,8 +6,6 @@ add_executable(client
     src/CmdHelper/CmdExecuter.cpp
     src/FsHelper.cpp
     src/ServerFsHelper.cpp
-    src/Session.cpp
-    src/SessionHandler.cpp
     main.cpp
 )
 

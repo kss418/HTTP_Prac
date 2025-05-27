@@ -7,6 +7,7 @@
 #include <future>
 #include <concepts>
 #include <iostream>
+#include <memory>
 
 namespace http = boost::beast::http;
 
@@ -20,12 +21,14 @@ template<HttpResponseBody Body>
 class Session{
 public:
     using tcp = boost::asio::ip::tcp;
+    using res = http::response<Body>;
+    using res_ptr = std::shared_ptr<res>;
     
     Session(
         boost::asio::io_context& io_context,
         const std::string& ip,
         unsigned short port,
-        std::promise <http::response <Body>>& prom,
+        std::promise <res_ptr>& prom,
         http::verb method,
         boost::beast::string_view target,
         nlohmann::json body = {}
@@ -42,8 +45,8 @@ private:
     boost::beast::string_view m_target;
     nlohmann::json m_body;
     std::string m_host;
-    std::promise <http::response <Body>>& m_prom;
-    http::response <Body> m_res;
+    std::promise<res_ptr> & m_prom;
+    res m_res;
 
     void handle_connect(const boost::system::error_code& ec);
     void handle_write(
@@ -61,7 +64,7 @@ Session<Body>::Session(
     boost::asio::io_context& io_context,
     const std::string& ip,
     unsigned short port,
-    std::promise <http::response <Body>>& prom,
+    std::promise<res_ptr>& prom,
     http::verb method,
     boost::beast::string_view target,
     nlohmann::json body
@@ -153,7 +156,8 @@ void Session<Body>::handle_read(
         std::cout << "읽기 실패 : " << ec.message() << std::endl;
     }
     else{
-        m_prom.set_value(m_res);
+        auto m_res_ptr = std::make_shared<res>(std::move(m_res));
+        m_prom.set_value(m_res_ptr);
         m_socket.close();
     }
 }

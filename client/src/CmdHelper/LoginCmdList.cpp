@@ -10,23 +10,23 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
         return;
     }
     
-    std::promise <http::response <http::string_body>> prom;
-    std::future <http::response <http::string_body>> fut = prom.get_future();
+    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
+    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
 
     Session session(m_io_context, "127.0.0.1", 8080, prom, http::verb::post, "/login", {{"id", arg[1]}, {"pw", arg[2]}});
     
-    http::response <http::string_body> res = fut.get();
-    if(res.result() != http::status::ok){
-        std::cout << "Status code : " << res.result() << std::endl;
+    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res.body())){
+    if(!nlohmann::json::accept(res->body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
         return;
     }
 
-    nlohmann::json json = nlohmann::json::parse(res.body());
+    nlohmann::json json = nlohmann::json::parse(res->body());
     bool ret = json.value("result", 0);
     std::string path = json.value("path", "");
     if(!ret){
@@ -52,23 +52,23 @@ void CmdHelper::sign_up(const std::vector<std::string>& arg){
         return;
     }
 
-    std::promise <http::response <http::string_body>> prom;
-    std::future <http::response <http::string_body>> fut = prom.get_future();
+    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
+    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
 
     Session session(m_io_context, "127.0.0.1", 8080, prom, http::verb::post, "/register", {{"id", arg[1]}, {"pw", arg[2]}});
     
-    http::response <http::string_body> res = fut.get();
-    if(res.result() != http::status::ok){
-        std::cout << "Status code : " << res.result() << std::endl;
+    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res.body())){
+    if(!nlohmann::json::accept(res->body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
         return;
     }
 
-    nlohmann::json json = nlohmann::json::parse(res.body());
+    nlohmann::json json = nlohmann::json::parse(res->body());
     bool ret = json.value("result", 0);
     if(!ret){
         std::cout << "이미 존재하는 아이디입니다." << std::endl;
