@@ -20,5 +20,6 @@ target_link_libraries(server
     nlohmann_json::nlohmann_json
     Boost::beast
     Boost::asio
+    Boost::url
     OpenSSL::Crypto
 )

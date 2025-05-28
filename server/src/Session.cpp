@@ -47,8 +47,13 @@ void Session::write(http::status status, const nlohmann::json& json){
     );
 }
 
-void Session::write_file(http::status status, const std::filesystem::path& path){
+void Session::write_file(
+    http::status status,
+    const std::string& id,
+    const std::filesystem::path& cwd
+){
     auto& fs = FsHelper::get_instance();
+    const auto path = cwd.is_absolute() ? cwd : ((fs.m_map["id"]->cwd()) / cwd);
     boost::beast::error_code ec;
 
     auto res = std::make_shared<http::response<http::file_body>>(
@@ -83,7 +88,7 @@ void Session::write_file(http::status status, const std::filesystem::path& path)
 void Session::execute_request(){
     auto method = m_req.method();
     auto target = m_req.target();
-    auto const uri = boost::urls::parse_uri(target);
+    auto const uri = boost::urls::parse_relative_ref(target);
     if(!uri){
         write(http::status::bad_request);
         return;
@@ -141,6 +146,6 @@ void Session::execute_request(){
         if(map.find("id") == map.end() || map.find("path") == map.end()){
             write(http::status::bad_request);
         }
-        write_file(http::status::ok, map["path"]);
+        write_file(http::status::ok, map["id"], map["path"]);
     }
 }

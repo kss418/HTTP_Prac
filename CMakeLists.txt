@@ -10,7 +10,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 find_package(unofficial-mariadb-connector-cpp CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED COMPONENTS beast asio)
+find_package(Boost CONFIG REQUIRED COMPONENTS beast asio url)
 find_package(OpenSSL REQUIRED)
 
 add_subdirectory(client)
