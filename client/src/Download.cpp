@@ -7,10 +7,12 @@ Download::Download(
     const std::string& ip,
     unsigned short port,
     http::verb method,
-    boost::beast::string_view target
+    boost::beast::string_view target,
+    const std::string& file_name
 ) : m_endpoint(boost::asio::ip::make_address_v4(ip), port),
     m_socket(io_context),
-    m_method(method)
+    m_method(method),
+    m_file_name(file_name)
 {    
     m_host = ip + ":" + std::to_string(port);
     m_parser = std::make_shared<parser>();
@@ -32,7 +34,7 @@ void Download::write(){
     boost::beast::error_code ec;
     auto& fs = FsHelper::get_instance();
     
-    std::filesystem::path path = fs.cwd() / "123";
+    std::filesystem::path path = fs.cwd() / m_file_name;
     m_parser->get().body().open(path.c_str(), boost::beast::file_mode::write, ec);
 
     if(ec){

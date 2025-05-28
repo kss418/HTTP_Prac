@@ -208,10 +208,11 @@ void ServerFsHelper::download(
     boost::asio::io_context& io_context
 ){
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
+    const std::string file_name = path.filename();
     const std::string target = "/download?id=" + m_id + "&path=" + path.string();
     auto session = std::make_shared<Download>(
         io_context, "127.0.0.1", 8080, 
-        http::verb::get, target
+        http::verb::get, target, file_name
     );
     session->connect();
 }

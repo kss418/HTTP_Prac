@@ -19,7 +19,8 @@ public:
         const std::string& ip,
         unsigned short port,
         http::verb method,
-        boost::beast::string_view target
+        boost::beast::string_view target,
+        const std::string& file_name
     );
     
     void connect();
@@ -35,6 +36,7 @@ private:
     std::string m_target_buf;
     std::string m_host;
     parser_ptr m_parser;
+    std::string m_file_name;
 
     void handle_connect(const boost::system::error_code& ec);
     void handle_write(
