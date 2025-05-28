@@ -16,7 +16,7 @@ void Session::handle_read_header(const boost::system::error_code& ec){
             read_empty();
         }
         else if(body_type == "file_body"){
-            read_file();
+            execute_file_request();
         }
         else{
 
@@ -37,14 +37,13 @@ void Session::handle_read_string(
 }
 
 void Session::handle_read_file(
-    const boost::system::error_code& ec,
-    std::shared_ptr<http::request_parser<http::file_body>> parser
+    const boost::system::error_code& ec
 ){
     if(ec){
         std::cout << "file_body 읽기 실패 : " << ec.message() << std::endl;
     }
     else{
-        execute_request_file(parser);
+
     }
 }
 
@@ -56,12 +55,15 @@ void Session::handle_read_empty(
         std::cout << "empty_body 읽기 실패 : " << ec.message() << std::endl;
     }
     else{
-        execute_request_empty(parser);
+        execute_empty_request(parser);
     }
 }
 
-void Session::handle_write(const boost::system::error_code& ec){
+void Session::handle_write(
+    const boost::system::error_code& ec,
+    const std::string& body_type
+){
     if(ec){
-        std::cout << "쓰기 실패 : " << ec.message() << std::endl;
+        std::cout << body_type << " 쓰기 실패 : " << ec.message() << std::endl;
     }
 }
