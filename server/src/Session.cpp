@@ -2,6 +2,8 @@
 #include "../include/Service.hpp"
 #include "../include/FsHelper.hpp"
 #include <iostream>
+#include <boost/url.hpp>
+#include <unordered_map>
 
 Session::Session(std::shared_ptr<tcp::socket> socket)
   :  m_socket(std::move(socket)){
@@ -81,19 +83,25 @@ void Session::write_file(http::status status, const std::filesystem::path& path)
 void Session::execute_request(){
     auto method = m_req.method();
     auto target = m_req.target();
+    auto const uri = boost::urls::parse_uri(target);
+    if(!uri){
+        write(http::status::bad_request);
+        return;
+    }
 
-    auto pos_q = target.find('?');
-    std::string path = target.substr(0, pos_q == -1 ? target.size() : pos_q);
-    std::string arg = target.substr(pos_q == -1 ? target.size() : pos_q);
-
-    std::cout << path << std::endl;
-    std::cout << arg << std::endl;
+    std::cout << target << std::endl;
     std::cout << m_req.body() << std::endl;
     if(method != http::verb::get && !nlohmann::json::accept(m_req.body())){
         std::cout << "파싱 불가" << std::endl;
         std::cout << m_req.body() << std::endl;
         write(http::status::bad_request);
         return;
+    }
+
+    auto path = uri->encoded_path();
+    std::unordered_map <std::string, std::string> map;
+    for(auto const& p : uri->params()){
+        map[p.key] = p.value;
     }
 
     nlohmann::json json = (method != http::verb::get ? nlohmann::json::parse(m_req.body()) : json.object());
@@ -124,11 +132,15 @@ void Session::execute_request(){
         write(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
     else if(method == http::verb::get && path == "/ls"){
-        std::string id = arg.substr(4);
-        write(http::status::ok, Service::ls(id));
+        if(map.find("id") == map.end()){
+            write(http::status::bad_request);
+        }
+        write(http::status::ok, Service::ls(map["id"]));
     }
     else if(method == http::verb::get && path == "/download"){
-        std::string path = arg.substr(6);
-        write_file(http::status::ok, path);
+        if(map.find("id") == map.end() || map.find("path") == map.end()){
+            write(http::status::bad_request);
+        }
+        write_file(http::status::ok, map["path"]);
     }
 }

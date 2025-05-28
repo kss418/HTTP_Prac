@@ -33,7 +33,7 @@ public:
         boost::beast::string_view target,
         nlohmann::json body = {}
     );
-
+    
     void write();
     void read();
 private:

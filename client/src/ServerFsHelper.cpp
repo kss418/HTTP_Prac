@@ -207,17 +207,22 @@ void ServerFsHelper::download(
     boost::asio::io_context& io_context
 ){
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    using ResPtr = std::shared_ptr<
+    using res_ptr = std::shared_ptr<
         http::response<http::file_body>
     >;
 
-    std::promise <ResPtr> prom;
-    std::future <ResPtr> fut = prom.get_future();
+    std::promise <res_ptr> prom;
+    std::future <res_ptr> fut = prom.get_future();
     auto session = std::make_shared<Session<http::file_body>>(
         io_context, "127.0.0.1", 8080, 
         prom, http::verb::get, "/download?id=" + m_id + "&path=" + path.string()
     );
 
+    res_ptr res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
+        return;
+    }
 
 }
 
