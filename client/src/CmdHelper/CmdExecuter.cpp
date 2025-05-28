@@ -22,7 +22,7 @@ void CmdHelper::login_execute(const std::vector<std::string>& arg){
         download(arg);
     }
     else if(arg[0] == "upload"){
-
+        upload(arg);
     }
     else if(!path_state){
         local_execute(arg);

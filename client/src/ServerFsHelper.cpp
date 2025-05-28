@@ -1,6 +1,7 @@
 #include "../include/ServerFsHelper.hpp"
 #include "../include/Session.hpp"
 #include "../include/Download.hpp"
+#include "../include/Upload.hpp"
 #include <iostream>
 #include <mutex>
 
@@ -260,5 +261,24 @@ void ServerFsHelper::download(
     );
     file_session->connect();
 }
+
+void ServerFsHelper::upload(
+    const std::filesystem::path& cwd,
+    boost::asio::io_context& io_context
+){
+    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
+    if(exist(path, io_context)){
+        return;
+    }
+
+    const std::string file_name = path.filename();
+    const std::string target = "/upload?id=" + m_id + "&path=" + path.string();
+    auto file_session = std::make_shared<Upload>(
+        io_context, "127.0.0.1", 8080, 
+        http::verb::post, target, file_name
+    );
+    file_session->connect();
+}
+
 
 
