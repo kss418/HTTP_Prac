@@ -203,6 +203,46 @@ void ServerFsHelper::rm(
     }
 }
 
+int32_t ServerFsHelper::exist(
+    const std::filesystem::path& cwd,
+    boost::asio::io_context& io_context
+){
+    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
+    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
+    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
+
+    Session session(
+        io_context, "127.0.0.1", 8080, 
+        prom, http::verb::get, "/exist?id=" + m_id + "&path=" + path.string()
+    );
+    
+    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    if(res->result() != http::status::ok){
+        std::cout << "Status code : " << res->result() << std::endl;
+        return;
+    }
+
+    if(!nlohmann::json::accept(res->body())){
+        std::cout << "서버 응답 파싱 불가" << std::endl;
+        return;
+    }
+
+    auto json = nlohmann::json::parse(res->body());
+    int32_t ret = json.value("result", -1);
+
+    if(ret == -1){
+        std::cout << "서버 응답 오류" << std::endl;
+    }
+    else if(ret == 1){
+        std::cout << "대상 파일이 존재하지 않습니다." << std::endl;
+    }
+    else if(ret == 2){
+        std::cout << "대상이 파일이 아닙니다." << std::endl;
+    }
+
+    return ret;
+}
+
 void ServerFsHelper::download(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
@@ -210,11 +250,11 @@ void ServerFsHelper::download(
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
     const std::string file_name = path.filename();
     const std::string target = "/download?id=" + m_id + "&path=" + path.string();
-    auto session = std::make_shared<Download>(
+    auto file_session = std::make_shared<Download>(
         io_context, "127.0.0.1", 8080, 
         http::verb::get, target, file_name
     );
-    session->connect();
+    file_session->connect();
 }
 
 

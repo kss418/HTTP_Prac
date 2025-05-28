@@ -100,3 +100,8 @@ int32_t Service::rm(json json){
     return (fs.m_map[id])->rm(path);
 }
 
+int32_t Service::exist(
+    const std::string& id, const std::string& path
+){
+
+}

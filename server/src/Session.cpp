@@ -148,4 +148,10 @@ void Session::execute_request(){
         }
         write_file(http::status::ok, map["id"], map["path"]);
     }
+    else if(method == http::verb::get && path == "/exist"){
+        if(map.find("id") == map.end() || map.find("path") == map.end()){
+            write(http::status::bad_request);
+        }
+        write(http::status::ok, Service::exist(map["id"], map["path"]));
+    }
 }

@@ -42,6 +42,11 @@ public:
         boost::asio::io_context& io_context
     );
 
+    int32_t exist(
+        const std::filesystem::path& path,
+        boost::asio::io_context& io_context
+    );
+
     ServerFsHelper() = default;
     ServerFsHelper(const ServerFsHelper&) = delete;
     ServerFsHelper& operator=(const ServerFsHelper&) = delete;
