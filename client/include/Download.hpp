@@ -11,7 +11,6 @@ public:
     using tcp = boost::asio::ip::tcp;
     using req = http::request<http::empty_body>;
     using parser = http::response_parser<http::file_body>;
-    
     using parser_ptr = std::shared_ptr<parser>;
     
     Download(

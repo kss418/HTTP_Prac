@@ -119,3 +119,10 @@ int32_t Service::exist_file(
 
     return 0;
 }
+
+void upload(
+    const std::string& id, const std::string& path, 
+    const std::string& file_name
+){
+    
+}
