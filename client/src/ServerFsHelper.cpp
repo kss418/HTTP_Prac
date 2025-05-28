@@ -1,5 +1,6 @@
 #include "../include/ServerFsHelper.hpp"
 #include "../include/Session.hpp"
+#include "../include/Download.hpp"
 #include <iostream>
 #include <mutex>
 
@@ -207,23 +208,12 @@ void ServerFsHelper::download(
     boost::asio::io_context& io_context
 ){
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    using res_ptr = std::shared_ptr<
-        http::response<http::file_body>
-    >;
-
-    std::promise <res_ptr> prom;
-    std::future <res_ptr> fut = prom.get_future();
-    auto session = std::make_shared<Session<http::file_body>>(
+    const std::string target = "/download?id=" + m_id + "&path=" + path.string();
+    auto session = std::make_shared<Download>(
         io_context, "127.0.0.1", 8080, 
-        prom, http::verb::get, "/download?id=" + m_id + "&path=" + path.string()
+        http::verb::get, target
     );
-
-    res_ptr res = fut.get();
-    if(res->result() != http::status::ok){
-        std::cout << "Status code : " << res->result() << std::endl;
-        return;
-    }
-
+    session->connect();
 }
 
 

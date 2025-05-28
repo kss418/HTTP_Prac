@@ -4,6 +4,7 @@ add_executable(client
     src/CmdHelper/LoginCmdList.cpp
     src/CmdHelper/ServerCmdList.cpp
     src/CmdHelper/CmdExecuter.cpp
+    src/Download.cpp
     src/FsHelper.cpp
     src/ServerFsHelper.cpp
     main.cpp
