@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.15)
 cmake_policy(SET CMP0028 NEW)
 project(HTTP_Prac)
-set(CMAKE_PREFIX_PATH "/home/kss418/.vscode/HTTP_Prac/vcpkg/installed/x64-linux/share" CACHE STRING "")
-set(CMAKE_TOOLCHAIN_FILE "/home/kss418/.vscode/HTTP_Prac/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain")
+set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/vcpkg/installed/x64-linux/share" CACHE STRING "")
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_CURRENT_LIST_DIR}/HTTP_Prac/vcpkg/scripts/buildsystems/vcpkg.cmake" CACHE STRING "vcpkg toolchain")
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
