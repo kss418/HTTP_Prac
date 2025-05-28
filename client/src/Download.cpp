@@ -45,7 +45,6 @@ void Download::write(){
     m_req->set(http::field::host, m_host);
     m_req->set(http::field::user_agent, BOOST_BEAST_VERSION_STRING);
     
-    std::cout << m_req->target() << std::endl;
     http::async_write(
         m_socket,
         *m_req,

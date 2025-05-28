@@ -219,12 +219,12 @@ int32_t ServerFsHelper::exist(
     std::shared_ptr<http::response <http::string_body>> res = fut.get();
     if(res->result() != http::status::ok){
         std::cout << "Status code : " << res->result() << std::endl;
-        return;
+        return -1;
     }
 
     if(!nlohmann::json::accept(res->body())){
         std::cout << "서버 응답 파싱 불가" << std::endl;
-        return;
+        return -1;
     }
 
     auto json = nlohmann::json::parse(res->body());
@@ -248,6 +248,10 @@ void ServerFsHelper::download(
     boost::asio::io_context& io_context
 ){
     const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
+    if(exist(path, io_context)){
+        return;
+    }
+
     const std::string file_name = path.filename();
     const std::string target = "/download?id=" + m_id + "&path=" + path.string();
     auto file_session = std::make_shared<Download>(

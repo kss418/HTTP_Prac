@@ -44,6 +44,7 @@ private:
     http::verb m_method;
     boost::beast::string_view m_target;
     nlohmann::json m_body;
+    std::string m_target_buf;
     std::string m_host;
     std::promise<res_ptr> & m_prom;
     res m_res;
@@ -75,6 +76,8 @@ Session<Body>::Session(
     m_body(body),
     m_prom(prom)
 {
+    m_target_buf = std::string(target);
+    m_target = m_target_buf;
     m_host = ip + ":" + std::to_string(port);
     m_socket.async_connect(
         m_endpoint, 

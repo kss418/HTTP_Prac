@@ -152,6 +152,7 @@ void Session::execute_request(){
         if(map.find("id") == map.end() || map.find("path") == map.end()){
             write(http::status::bad_request);
         }
-        write(http::status::ok, Service::exist(map["id"], map["path"]));
+        int32_t ret = Service::exist_file(map["id"], map["path"]);
+        write(http::status::ok, {{"result", ret}});
     }
 }

@@ -15,10 +15,10 @@ namespace Service{
     json ls(const std::string& id);
     int32_t rm(json json);
     int32_t rmdir(json json);
-    int32_t exist(
+    int32_t exist_file(
         const std::string& id, 
-        const std::string& path
-    )
+        const std::filesystem::path& path
+    );
 
     std::string cwd(json json);
 };
