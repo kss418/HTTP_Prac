@@ -19,6 +19,10 @@ namespace Service{
         const std::string& id, 
         const std::filesystem::path& path
     );
+    void upload(
+        const std::string& id, const std::string& path, 
+        const std::string& file_name
+    );
 
     std::string cwd(json json);
 };

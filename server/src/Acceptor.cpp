@@ -29,7 +29,7 @@ void Acceptor::handle_accept(
 	}
 	else{
 		auto session = std::make_shared<Session>(std::move(socket));
-		session->read();
+		session->read_header();
 	}
 
 	accept();
