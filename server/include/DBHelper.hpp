@@ -2,6 +2,7 @@
 #include <mariadb/conncpp.hpp>
 #include <string>
 #include <mutex>
+#include <memory>
 
 class DBHelper{
 public:

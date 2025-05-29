@@ -1,6 +1,5 @@
 #include "../include/DBHelper.hpp"
 #include <iostream>
-#include <memory>
 #include <openssl/sha.h>
 
 std::once_flag DBHelper::m_init_flag;
