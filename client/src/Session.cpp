@@ -136,7 +136,7 @@ void Session::write_file(
 
 
 var_parser Session::read(){
-    std::shared_ptr<std::promise<var_parser>> prom;
+    auto prom = std::make_shared<std::promise<var_parser>>();
     auto fut = prom->get_future();
 
     http::async_read_header(
