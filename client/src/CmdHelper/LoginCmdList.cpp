@@ -1,9 +1,9 @@
 #include "../../include/CmdHelper.hpp"
 #include "../../include/Session.hpp"
-#include "../../include/FsHelper.hpp"
-#include "../../include/ServerFsHelper.hpp"
 #include "../../include/Service.hpp"
+#include "../../include/Utility.hpp"
 #include <iostream>
+#include <expected>
 
 void CmdHelper::sign_in(const std::vector<std::string>& arg){
     if(arg.size() <= 2){
@@ -12,7 +12,7 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
     }
 
     auto session = std::make_shared<Session>(
-        m_io_context, boost::asio::ip::make_address("127.0.0.1"), 8080
+        m_io_context, "127.0.0.1", 8080
     );
     
     std::future<void> write_fut = std::async(
@@ -33,22 +33,23 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
     auto var = read_fut.get();
 
     if(std::holds_alternative<string_parser>(var)){
+        std::cout << "서버 응답 오류" << std::endl;
         return;
     }
-    auto res = std::get<string_parser>(var)
-
-    if(res->result() != http::status::ok){
-        std::cout << "Status code : " << res->result() << std::endl;
-        return;
-    }
-
-    if(!nlohmann::json::accept(res->body())){
-        std::cout << "서버 응답 파싱 불가" << std::endl;
+    auto res = std::get<string_parser>(var)->get();
+    auto json = Utility::parse_json(res.body());
+    if(!json){
+        std::cerr << json.error() << std::endl;
         return;
     }
 
-    nlohmann::json json = nlohmann::json::parse(res->body());
-    
+    if(res.result() != http::status::ok){
+        auto message = json->value("message", "");
+        std::cout << message << std::endl;
+        return;
+    }
+
+    Service::sign_in(*json, arg[1], logged_in);
 }
 
 void CmdHelper::sign_up(const std::vector<std::string>& arg){
@@ -62,30 +63,45 @@ void CmdHelper::sign_up(const std::vector<std::string>& arg){
         return;
     }
 
-    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
-    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
-
-    Session session(m_io_context, "127.0.0.1", 8080, prom, http::verb::post, "/register", {{"id", arg[1]}, {"pw", arg[2]}});
+    auto session = std::make_shared<Session>(
+        m_io_context, "127.0.0.1", 8080
+    );
     
-    std::shared_ptr<http::response <http::string_body>> res = fut.get();
-    if(res->result() != http::status::ok){
-        std::cout << "Status code : " << res->result() << std::endl;
+    std::future<void> write_fut = std::async(
+        std::launch::async, [session, &arg]{
+            session->write_string(
+                http::verb::post, "/register",
+                {{"id", arg[1]}, {"pw", arg[2]}}
+            );
+        }
+    );
+    write_fut.get();
+
+    std::future<var_parser> read_fut = std::async(
+        std::launch::async, [session]{
+            return session->read();
+        }
+    );
+    auto var = read_fut.get();
+
+   if(std::holds_alternative<string_parser>(var)){
+        std::cout << "서버 응답 오류" << std::endl;
+        return;
+    }
+    auto res = std::get<string_parser>(var)->get();
+    auto json = Utility::parse_json(res.body());
+    if(!json){
+        std::cerr << json.error() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res->body())){
-        std::cout << "서버 응답 파싱 불가" << std::endl;
+    if(res.result() != http::status::ok){
+        auto message = json->value("message", "");
+        std::cout << message << std::endl;
         return;
     }
 
-    nlohmann::json json = nlohmann::json::parse(res->body());
-    bool ret = json.value("result", 0);
-    if(!ret){
-        std::cout << "이미 존재하는 아이디입니다." << std::endl;
-    }
-    else{
-        std::cout << "회원가입 성공" << std::endl;
-    }
+    Service::sign_up(*json);
 }
 
 void CmdHelper::logout(){

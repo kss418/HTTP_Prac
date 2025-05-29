@@ -41,17 +41,10 @@ void CmdHelper::server_rm(const std::vector<std::string>& arg){
 
 void CmdHelper::server_ls(){
     auto& fs = ServerFsHelper::get_instance();
-    for(const auto& [file_name, is_dir] : fs.ls(m_io_context)){
-        if(is_dir){
-            std::cout << "[DIR] ";
-        }
-        else{
-            std::cout << "[FILE] ";
-        }
-        std::cout << file_name << std::endl;
-    }
+    fs.ls(m_io_context);
 }
 
+/*
 void CmdHelper::download(const std::vector<std::string>& arg){
     if(arg.size() == 1){
         std::cout << "인자가 없습니다." << std::endl;
@@ -71,4 +64,4 @@ void CmdHelper::upload(const std::vector<std::string>& arg){
     auto& fs = ServerFsHelper::get_instance();
     fs.upload(arg[1], m_io_context);
 }
-
+*/

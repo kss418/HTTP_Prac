@@ -1,4 +1,5 @@
 add_executable(client
+    src/Utility.cpp
     src/CmdHelper/CmdHelper.cpp
     src/CmdHelper/ClientCmdList.cpp
     src/CmdHelper/LoginCmdList.cpp

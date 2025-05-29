@@ -161,7 +161,7 @@ void Session::read_string(
     auto len_sv = header[boost::beast::http::field::content_length];
     std::size_t len = len_sv.empty() ? 0 : std::stoull(std::string(len_sv));
 
-    auto parser = std::make_shared<http::request_parser<http::string_body>>(std::move(*m_req_header));
+    auto parser = std::make_shared<http::response_parser<http::string_body>>(std::move(*m_res_header));
     parser->get().body().reserve(len);
 
     http::async_read(
@@ -186,7 +186,7 @@ void Session::read_empty(
         m_socket,
         m_buffer,
         *parser,
-        [self = shared_from_this(), parser](
+        [self = shared_from_this(), parser, prom](
             const boost::system::error_code& ec, std::size_t bytes
         ){
             self->handle_read_empty(ec, parser, prom);
@@ -194,9 +194,10 @@ void Session::read_empty(
     );
 }
 
+/*
 void Session::read_file(const std::string& path, const std::string& file_name){
     auto const& header = m_res_header->get();
-    auto parser = std::make_shared<http::request_parser<http::file_body>>(std::move(*m_req_header));
+    auto parser = std::make_shared<http::request_parser<http::file_body>>(std::move(*m_res_header));
 
     boost::system::error_code ec;
     std::string full_path = path + "/" + file_name;
@@ -221,3 +222,4 @@ void Session::read_file(const std::string& path, const std::string& file_name){
         }
     );
 }
+*/

@@ -35,9 +35,9 @@ DBHelper& DBHelper::get_instance(){
         std::atexit(&DBHelper::close);
         m_instance = std::make_unique<DBHelper>();
         auto* driver = sql::mariadb::get_driver_instance();
-
+        
         sql::Properties props({
-            {"hostName", "127.0.0.1"},
+            {"hostName", "localhost"},
             {"port", "3306"},
             {"user", "root"},
             {"password", std::getenv("DB_PASSWORD")},
