@@ -6,8 +6,9 @@ void Session::handle_read_header(const boost::system::error_code& ec){
         std::cout << "헤더 읽기 실패 : " << ec.message() << std::endl;
     }
     else{
-        auto const& req_header = m_req_header.get();
+        auto const& req_header = m_req_header->get();
         auto body_type = req_header["X-Body-Type"];
+        std::cout << body_type << std::endl;
 
         if(body_type.empty() || body_type == "string_body"){
             read_string();

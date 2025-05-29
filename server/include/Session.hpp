@@ -18,10 +18,11 @@ public:
 private:
     std::shared_ptr<tcp::socket> m_socket;
     boost::beast::flat_buffer m_buffer;
-    http::request_parser<http::empty_body> m_req_header;
+    std::shared_ptr<http::request_parser<http::empty_body>> m_req_header;
 
     void write_string(http::status status, const nlohmann::json& json = {});
-    void write_file(const std::filesystem::path& path, const std::string& file_name);
+    void write_file(http::status status, const std::filesystem::path& path, const std::string& file_name);
+    void write_empty(http::status status);
 
     void execute_string_request(std::shared_ptr<http::request_parser<http::string_body>> parser);
     void execute_empty_request(std::shared_ptr<http::request_parser<http::empty_body>> parser);
