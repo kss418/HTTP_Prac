@@ -7,8 +7,15 @@
 #include <future>
 #include <iostream>
 #include <memory>
+#include <variant>
 
 namespace http = boost::beast::http;
+using file_parser = std::shared_ptr<http::response_parser<http::file_body>>;
+using empty_parser = std::shared_ptr<http::response_parser<http::empty_body>>;
+using string_parser = std::shared_ptr<http::response_parser<http::string_body>>;
+using var_parser = std::variant<
+    file_parser, empty_parser, string_parser, bool
+>;
 
 class Session : public std::enable_shared_from_this <Session> {
 public:
@@ -17,7 +24,8 @@ public:
     
     Session(
         boost::asio::io_context& io_context,
-        const tcp::endpoint& endpoint
+        const std::string& ip,
+        unsigned short port
     );
     
     void write_string(
@@ -35,9 +43,10 @@ public:
 
     bool connect();
 
-    void read_header();
-    void read_string();
-    void read_empty();
+    var_parser read();
+
+    void read_string(std::shared_ptr<std::promise<var_parser>> prom);
+    void read_empty(std::shared_ptr<std::promise<var_parser>> prom);
     void read_file(
         const std::string& path, 
         const std::string& file_name
@@ -47,7 +56,7 @@ private:
     boost::beast::tcp_stream m_socket;
     boost::beast::flat_buffer m_buffer;
     std::string m_host;
-    std::shared_ptr<http::request_parser<http::empty_body>> m_req_header;
+    empty_parser m_res_header;
 
     void handle_connect(
         const boost::system::error_code& ec,
@@ -58,17 +67,23 @@ private:
         const std::string& body_type
     );
 
-    void handle_read_header(const boost::system::error_code& ec);
+    void handle_read_header(
+        const boost::system::error_code& ec,
+        std::shared_ptr<std::promise<var_parser>> prom
+    );
     void handle_read_string(
         const boost::system::error_code& ec,
-        std::shared_ptr<http::request_parser<http::string_body>> parser
+        string_parser parser,
+        std::shared_ptr<std::promise<var_parser>> prom
     );
     void handle_read_file(
         const boost::system::error_code& ec,
-        std::shared_ptr<http::request_parser<http::file_body>> parser
+        file_parser parser,
+        std::shared_ptr<std::promise<var_parser>> prom
     );
     void handle_read_empty(
         const boost::system::error_code& ec,
-        std::shared_ptr<http::request_parser<http::empty_body>> parser
+        empty_parser parser,
+        std::shared_ptr<std::promise<var_parser>> prom
     );
 };

@@ -10,6 +10,7 @@ add_executable(client
     src/ServerFsHelper.cpp
     src/Session.cpp
     src/SessionHandler.cpp
+    src/Service.cpp
     main.cpp
 )
 

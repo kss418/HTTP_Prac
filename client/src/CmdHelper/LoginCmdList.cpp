@@ -2,6 +2,7 @@
 #include "../../include/Session.hpp"
 #include "../../include/FsHelper.hpp"
 #include "../../include/ServerFsHelper.hpp"
+#include "../../include/Service.hpp"
 #include <iostream>
 
 void CmdHelper::sign_in(const std::vector<std::string>& arg){
@@ -9,13 +10,33 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
         std::cout << "아이디와 비밀번호를 입력해주세요." << std::endl;
         return;
     }
-    
-    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
-    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
 
-    Session session(m_io_context, "127.0.0.1", 8080, prom, http::verb::post, "/login", {{"id", arg[1]}, {"pw", arg[2]}});
+    auto session = std::make_shared<Session>(
+        m_io_context, boost::asio::ip::make_address("127.0.0.1"), 8080
+    );
     
-    std::shared_ptr<http::response <http::string_body>> res = fut.get();
+    std::future<void> write_fut = std::async(
+        std::launch::async, [session, &arg]{
+            session->write_string(
+                http::verb::post, "/login",
+                {{"id", arg[1]}, {"pw", arg[2]}}
+            );
+        }
+    );
+    write_fut.get();
+
+    std::future<var_parser> read_fut = std::async(
+        std::launch::async, [session]{
+            return session->read();
+        }
+    );
+    auto var = read_fut.get();
+
+    if(std::holds_alternative<string_parser>(var)){
+        return;
+    }
+    auto res = std::get<string_parser>(var)
+
     if(res->result() != http::status::ok){
         std::cout << "Status code : " << res->result() << std::endl;
         return;
@@ -27,18 +48,7 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
     }
 
     nlohmann::json json = nlohmann::json::parse(res->body());
-    bool ret = json.value("result", 0);
-    std::string path = json.value("path", "");
-    if(!ret){
-        std::cout << "아이디 또는 비밀번호가 일치하지 않습니다." << std::endl;
-    }
-    else{
-        std::cout << "로그인 성공" << std::endl;
-        auto& fs = ServerFsHelper::get_instance();
-        fs.set_cwd(path);
-        fs.set_id(arg[1]);
-        logged_in = 1;
-    }
+    
 }
 
 void CmdHelper::sign_up(const std::vector<std::string>& arg){

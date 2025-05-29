@@ -3,12 +3,15 @@
 
 Session::Session(
     boost::asio::io_context& io_context,
-    const tcp::endpoint& endpoint
-) : m_endpoint(endpoint),
+    const std::string& ip,
+    unsigned short port
+) : m_endpoint({
+        boost::asio::ip::make_address("127.0.0.1"), 8080
+    }),
     m_socket(io_context),
-    m_req_header(std::make_shared<http::request_parser<http::empty_body>>())
+    m_res_header(std::make_shared<http::response_parser<http::empty_body>>())
 {
-    m_host = m_endpoint.address().to_string() + ":" + std::to_string(endpoint.port());
+    m_host = m_endpoint.address().to_string() + ":" + std::to_string(m_endpoint.port());
 }
 
 bool Session::connect(){
@@ -131,22 +134,30 @@ void Session::write_file(
 }
 */
 
-void Session::read_header(){
+
+var_parser Session::read(){
+    std::shared_ptr<std::promise<var_parser>> prom;
+    auto fut = prom->get_future();
+
     http::async_read_header(
         m_socket,
         m_buffer,
-        *m_req_header,
-        [self = shared_from_this()](
+        *m_res_header,
+        [self = shared_from_this(), prom](
             const boost::system::error_code& ec,
             std::size_t bytes_transferred
         ){
-            self->handle_read_header(ec);
+            self->handle_read_header(ec, prom);
         }
     );
+
+    return fut.get();
 }
 
-void Session::read_string(){
-    auto const& header = m_req_header->get();
+void Session::read_string(
+    std::shared_ptr<std::promise<var_parser>> prom
+){
+    auto const& header = m_res_header->get();
     auto len_sv = header[boost::beast::http::field::content_length];
     std::size_t len = len_sv.empty() ? 0 : std::stoull(std::string(len_sv));
 
@@ -157,17 +168,19 @@ void Session::read_string(){
         m_socket,
         m_buffer,
         *parser,
-        [self = shared_from_this(), parser](
+        [self = shared_from_this(), parser, prom](
             const boost::system::error_code& ec,
             std::size_t bytes_transffereds
         ){
-            self->handle_read_string(ec, parser);
+            self->handle_read_string(ec, parser, prom);
         }
     );
 }
 
-void Session::read_empty(){
-    auto parser = m_req_header;
+void Session::read_empty(
+    std::shared_ptr<std::promise<var_parser>> prom
+){
+    auto parser = m_res_header;
 
     http::async_read(
         m_socket,
@@ -176,13 +189,13 @@ void Session::read_empty(){
         [self = shared_from_this(), parser](
             const boost::system::error_code& ec, std::size_t bytes
         ){
-            self->handle_read_empty(ec, parser);
+            self->handle_read_empty(ec, parser, prom);
         }
     );
 }
 
 void Session::read_file(const std::string& path, const std::string& file_name){
-    auto const& header = m_req_header->get();
+    auto const& header = m_res_header->get();
     auto parser = std::make_shared<http::request_parser<http::file_body>>(std::move(*m_req_header));
 
     boost::system::error_code ec;
