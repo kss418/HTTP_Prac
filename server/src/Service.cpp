@@ -1,4 +1,4 @@
-#include "../include/Service.hpp"
+#include "../include/Session.hpp"
 #include "../include/DBHelper.hpp"
 #include "../include/FsHelper.hpp"
 #include <iostream>
@@ -98,26 +98,6 @@ int32_t Service::rm(json json){
     }
 
     return (fs.m_map[id])->rm(path);
-}
-
-int32_t Service::exist_file(
-    const std::string& id, const std::filesystem::path& path
-){
-    auto& fs = FsHelper::get_instance();
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
-    }
-
-    auto next_path = (path.is_absolute() ? path : (fs.m_map[id])->cwd() / path);
-    if(!((fs.m_map[id])->exists(next_path))){
-        return 1;
-    }
-
-    if(std::filesystem::is_directory(next_path)){
-        return 2;
-    }
-
-    return 0;
 }
 
 void upload(

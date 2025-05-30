@@ -1,5 +1,4 @@
 #include "../include/Session.hpp"
-#include "../include/Service.hpp"
 #include "../include/FsHelper.hpp"
 #include <iostream>
 #include <boost/url.hpp>
@@ -60,12 +59,11 @@ void Session::read_empty(){
     );
 }
 
-void Session::read_file(const std::string& path, const std::string& file_name){
+void Session::read_file(const std::string& full_path){
     auto const& header = m_req_header->get();
     auto parser = std::make_shared<http::request_parser<http::file_body>>(std::move(*m_req_header));
 
     boost::system::error_code ec;
-    std::string full_path = path + "/" + file_name;
     parser->get().body().open(
         full_path.c_str(),
         boost::beast::file_mode::write, ec
@@ -131,15 +129,13 @@ void Session::write_string(http::status status, const nlohmann::json& json){
 }
 
 void Session::write_file(
-    http::status status, const std::filesystem::path& path, 
-    const std::string& file_name
+    http::status status, const std::filesystem::path& full_path
 ){
     boost::beast::error_code ec;
     auto res = std::make_shared<http::response<http::file_body>>(
         http::status::ok, 11
     );
 
-    std::string full_path = path.string() + "/" + file_name;
     res->set(http::field::server, BOOST_BEAST_VERSION_STRING);
     res->body().open(full_path.c_str(), boost::beast::file_mode::scan, ec);
 
@@ -221,6 +217,9 @@ void Session::execute_string_request(
         std::string cwd = Service::cwd(json);
         write_string(http::status::ok, {{"result", ret}, {"path", cwd}});
     }
+    else{
+        write_empty(http::status::bad_request);
+    }
 }
 
 void Session::execute_empty_request(
@@ -249,13 +248,15 @@ void Session::execute_empty_request(
         }
         write_string(http::status::ok, Service::ls(map["id"]));
     }
-    else if(method == http::verb::get && path == "/exist"){
+    else if(method == http::verb::get && path == "/download"){
         if(map.find("id") == map.end() || map.find("path") == map.end()){
             write_empty(http::status::bad_request);
             return;
         }
-        int32_t ret = Service::exist_file(map["id"], map["path"]);
-        write_string(http::status::ok, {{"result", ret}});
+
+    }
+    else{
+        write_empty(http::status::bad_request);
     }
 }
 
@@ -276,10 +277,14 @@ void Session::execute_file_request(){
         map[p.key] = p.value;
     }
 
-    if(method == http::verb::get && path == "/download"){
-        if(map.find("id") == map.end() || map.find("path") == map.end() ){
+    if(method == http::verb::post && path == "/upload"){
+        if(map.find("id") == map.end() || map.find("path") == map.end()){
             write_empty(http::status::bad_request);
+            return;
         }
-        read_file(map["path"], map["file_name"]);
+
+    }
+    else{
+        write_empty(http::status::bad_request);
     }
 }
