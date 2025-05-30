@@ -2,23 +2,18 @@
 #include "../include/ServerFsHelper.hpp"
 #include <iostream>
 
-void Service::sign_in(const json& json, const std::string& id){
+void Service::sign_in(const json& json, const std::string& id, bool& logged_in){
     std::string path = json.value("path", "");
 
     std::cout << "로그인 성공" << std::endl;
     auto& fs = ServerFsHelper::get_instance();
     fs.set_cwd(path);
     fs.set_id(id);
+    logged_in = 1;
 }
 
-void Service::sign_up(const json& json){
-    bool ret = json.value("result", 0);
-    if(!ret){
-        std::cout << "이미 존재하는 아이디입니다." << std::endl;
-    }
-    else{
-        std::cout << "회원가입 성공" << std::endl;
-    }
+void Service::sign_up(){
+    std::cout << "회원가입 성공" << std::endl;
 }
 
 void Service::server_mkdir(const json& json){

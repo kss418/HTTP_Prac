@@ -23,17 +23,26 @@ void Service::sign_in(const json& json, Session_ptr self){
     }
 }
 
-bool Service::sign_up(const json& json){
+void Service::sign_up(const json& json, Session_ptr self){
     auto& db_helper = DBHelper::get_instance();
     std::string id = json.value("id", "");
     std::string pw = json.value("pw", "");
 
-    std::cout << "회원가입 / id = " << id << std::endl;
     if(id.empty() || pw.empty()){
-        return 0;
+        self->write_string(
+            http::status::bad_request, 
+            {{"message", "요청 형식이 잘못 되었습니다."}}
+        );
     }
-    
-    return db_helper.create_id(id, pw);
+    else if(!db_helper.create_id(id, pw)){
+        self->write_string(
+            http::status::conflict, 
+            {{"message", "이미 존재하는 아이디입니다."}}
+        );
+    }
+    else{
+        self->write_empty(http::status::ok);
+    }
 }
 
 bool Service::mkdir(const json& json){

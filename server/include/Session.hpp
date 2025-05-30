@@ -54,7 +54,7 @@ namespace Service{
     using Session_ptr = std::shared_ptr<Session>;
 
     void sign_in(const json& json, Session_ptr self);
-    bool sign_up(const json& json);
+    void sign_up(const json& json, Session_ptr self);
 
     bool mkdir(const json& json);
     bool cd(const json& json);

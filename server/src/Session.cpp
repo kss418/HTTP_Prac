@@ -205,8 +205,7 @@ void Session::execute_string_request(
         Service::sign_in(json, self);
     }
     else if(method == http::verb::post && path == "/register"){
-        bool ret = Service::sign_up(json);
-        write_string(http::status::ok, {{"result", ret}});
+        Service::sign_up(json, self);
     }
     else if(method == http::verb::post && path == "/mkdir"){
         bool ret = Service::mkdir(json);
