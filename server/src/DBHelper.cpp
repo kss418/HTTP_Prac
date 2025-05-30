@@ -40,6 +40,7 @@ DBHelper& DBHelper::get_instance(){
             {"port", "3306"},
             {"user", "root"},
             {"password", std::getenv("DB_PASSWORD")},
+            {"useTls", "true"},
             {"schema", "test"},
             {"sslCa", "/etc/mysql/certs/ca.pem"},
             {"tlsCert", "/etc/mysql/certs/server-cert.pem"},
