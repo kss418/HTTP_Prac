@@ -56,7 +56,7 @@ namespace Service{
     void sign_in(const json& json, Session_ptr self);
     void sign_up(const json& json, Session_ptr self);
 
-    bool mkdir(const json& json);
+    void mkdir(const json& json, Session_ptr self);
     bool cd(const json& json);
     json ls(const std::string& id);
     int32_t rm(const json& json);

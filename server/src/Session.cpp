@@ -208,8 +208,7 @@ void Session::execute_string_request(
         Service::sign_up(json, self);
     }
     else if(method == http::verb::post && path == "/mkdir"){
-        bool ret = Service::mkdir(json);
-        write_string(http::status::ok, {{"result", ret}});
+        Service::mkdir(json, self);
     }
     else if(method == http::verb::delete_ && path == "/rmdir"){
         int32_t ret = Service::rmdir(json);

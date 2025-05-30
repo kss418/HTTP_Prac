@@ -16,11 +16,8 @@ void Service::sign_up(){
     std::cout << "회원가입 성공" << std::endl;
 }
 
-void Service::server_mkdir(const json& json){
-    bool ret = json.value("result", 0);
-    if(!ret){
-        std::cout << "이미 존재하는 디렉토리입니다." << std::endl;
-    }
+void Service::server_mkdir(){
+    std::cout << "디렉토리 생성 성공" << std::endl;
 }
 
 void Service::server_cd(const json& json){

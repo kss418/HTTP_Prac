@@ -14,6 +14,7 @@ public:
     int32_t rmdir(const std::filesystem::path& any_path);
     int32_t rm(const std::filesystem::path& any_path);
     nlohmann::json ls() const;
+    
 private:
     std::filesystem::path m_working_path;
 };
@@ -22,6 +23,7 @@ class FsHelper{
 public:
     static FsHelper& get_instance();
     std::unordered_map<std::string, std::unique_ptr<FsExecuter>> m_map;
+    FsExecuter& get_executer(const std::string& id);
 
     FsHelper() = default;
     FsHelper(const FsHelper&) = delete;

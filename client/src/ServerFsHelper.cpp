@@ -54,24 +54,26 @@ void ServerFsHelper::mkdir(
     );
     auto var = read_fut.get();
 
-    if(!std::holds_alternative<string_parser>(var)){
+    if(std::holds_alternative<empty_parser>(var)){
+        Service::server_mkdir();
+    }
+    else if(std::holds_alternative<string_parser>(var)){
+        auto res = std::get<string_parser>(var)->get();
+        auto json = Utility::parse_json(res.body());
+        if(!json){
+            std::cerr << json.error() << std::endl;
+            return;
+        }
+
+        if(res.result() != http::status::ok){
+            auto message = json->value("message", "");
+            std::cout << message << std::endl;
+            return;
+        }
+    }
+    else{
         std::cout << "서버 응답 오류" << std::endl;
-        return;
     }
-    auto res = std::get<string_parser>(var)->get();
-    auto json = Utility::parse_json(res.body());
-    if(!json){
-        std::cerr << json.error() << std::endl;
-        return;
-    }
-
-    if(res.result() != http::status::ok){
-        auto message = json->value("message", "");
-        std::cout << message << std::endl;
-        return;
-    }
-
-    Service::server_mkdir(*json);
 }
 
 void ServerFsHelper::cd(

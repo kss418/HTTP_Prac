@@ -50,7 +50,6 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
     }
     else{
         std::cout << "서버 응답 오류" << std::endl;
-        return;
     }
 }
 
@@ -106,7 +105,6 @@ void CmdHelper::sign_up(const std::vector<std::string>& arg){
     }
     else{
         std::cout << "서버 응답 오류" << std::endl;
-        return;
     }
 }
 
