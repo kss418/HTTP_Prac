@@ -16,7 +16,7 @@ target_include_directories(server
 
 target_link_libraries(server
     PRIVATE
-    unofficial::mariadb-connector-cpp::mariadbcpp
+    libpqxx::pqxx
     nlohmann_json::nlohmann_json
     Boost::beast
     Boost::asio

@@ -22,7 +22,6 @@ target_include_directories(client
 
 target_link_libraries(client
     PRIVATE
-    unofficial::mariadb-connector-cpp::mariadbcpp
     nlohmann_json::nlohmann_json
     Boost::beast
     Boost::asio
