@@ -199,11 +199,10 @@ void Session::execute_string_request(
         map[p.key] = p.value;
     }
 
+    auto self = shared_from_this();
     nlohmann::json json = nlohmann::json::parse(req.body());
     if(method == http::verb::post && path == "/login"){
-        bool ret = Service::sign_in(json);
-        std::string cwd = Service::cwd(json);
-        write_string(http::status::ok, {{"result", ret}, {"path", cwd}});
+        Service::sign_in(json, self);
     }
     else if(method == http::verb::post && path == "/register"){
         bool ret = Service::sign_up(json);

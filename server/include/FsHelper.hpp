@@ -9,11 +9,10 @@ class FsExecuter{
 public:
     FsExecuter(const std::string& id);
     std::filesystem::path cwd() const;
-    bool exists(const std::filesystem::path& cwd) const;
-    bool set_cwd(const std::filesystem::path& cwd);
-    bool mkdir(const std::filesystem::path& cwd);
-    int32_t rmdir(const std::filesystem::path& cwd);
-    int32_t rm(const std::filesystem::path& cwd);
+    void set_cwd(const std::filesystem::path& dir_path);
+    bool mkdir(const std::filesystem::path& any_path);
+    int32_t rmdir(const std::filesystem::path& any_path);
+    int32_t rm(const std::filesystem::path& any_path);
     nlohmann::json ls() const;
 private:
     std::filesystem::path m_working_path;

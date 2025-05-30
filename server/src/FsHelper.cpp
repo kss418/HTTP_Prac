@@ -19,47 +19,45 @@ std::filesystem::path FsExecuter::cwd() const{
     return m_working_path.string();
 }
 
-bool FsExecuter::exists(const std::filesystem::path& cwd) const{
-    return std::filesystem::exists(cwd);
+void FsExecuter::set_cwd(const std::filesystem::path& dir_path){
+    m_working_path = dir_path;
 }
 
-bool FsExecuter::set_cwd(const std::filesystem::path& cwd){
-    m_working_path = cwd;
-    return 1;
+bool FsExecuter::mkdir(const std::filesystem::path& any_path){
+    const auto next_path = any_path.is_absolute() 
+        ? any_path : (m_working_path / any_path);
+    return std::filesystem::create_directories(next_path);
 }
 
-bool FsExecuter::mkdir(const std::filesystem::path& cwd){
-    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    return std::filesystem::create_directories(path);
-}
-
-int32_t FsExecuter::rmdir(const std::filesystem::path& cwd){
-    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    if(!std::filesystem::exists(path)){
+int32_t FsExecuter::rmdir(const std::filesystem::path& any_path){
+    const auto next_path = any_path.is_absolute() 
+        ? any_path : (m_working_path / any_path);
+    if(!std::filesystem::exists(next_path)){
         return 1;
     }
-    else if(!std::filesystem::is_directory(path)){
+    else if(!std::filesystem::is_directory(next_path)){
         return 2;
     }
-    else if(!std::filesystem::is_empty(path)){
+    else if(!std::filesystem::is_empty(next_path)){
         return 3;
     }
     else{
-        std::filesystem::remove(path);
+        std::filesystem::remove(next_path);
         return 0;
     }
 }
 
-int32_t FsExecuter::rm(const std::filesystem::path& cwd){
-    const auto path = cwd.is_absolute() ? cwd : (m_working_path / cwd);
-    if(!std::filesystem::exists(path)){
+int32_t FsExecuter::rm(const std::filesystem::path& any_path){
+    const auto next_path = any_path.is_absolute() 
+        ? any_path : (m_working_path / any_path);
+    if(!std::filesystem::exists(next_path)){
         return 1;
     }
-    else if(std::filesystem::is_directory(path)){
+    else if(std::filesystem::is_directory(next_path)){
         return 2;
     }
     else{
-        std::filesystem::remove(path);
+        std::filesystem::remove(next_path);
         return 0;
     }
 }

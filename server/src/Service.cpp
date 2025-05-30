@@ -3,16 +3,27 @@
 #include "../include/FsHelper.hpp"
 #include <iostream>
 
-bool Service::sign_in(json json){
+void Service::sign_in(const json& json, Session_ptr self){
     auto& db_helper = DBHelper::get_instance();
     std::string id = json.value("id", "");
     std::string pw = json.value("pw", "");
-    
-    std::cout << "로그인 / id = " << id << std::endl;
-    return db_helper.match_pw(id, pw);
+
+    std::string cwd = Service::cwd(json);
+    if(db_helper.match_pw(id, pw)){
+        self->write_string(
+            http::status::ok, 
+            {{"path", cwd}}
+        );
+    }   
+    else{
+        self->write_string(
+            http::status::unauthorized, 
+            {{"message", "아이디 또는 비밀번호가 일치하지 않습니다."}}
+        );
+    }
 }
 
-bool Service::sign_up(json json){
+bool Service::sign_up(const json& json){
     auto& db_helper = DBHelper::get_instance();
     std::string id = json.value("id", "");
     std::string pw = json.value("pw", "");
@@ -25,7 +36,7 @@ bool Service::sign_up(json json){
     return db_helper.create_id(id, pw);
 }
 
-bool Service::mkdir(json json){
+bool Service::mkdir(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string path = json.value("path", "");
     std::string id = json.value("id", "");
@@ -38,7 +49,7 @@ bool Service::mkdir(json json){
     return (fs.m_map[id])->mkdir(path);
 }
 
-bool Service::cd(json json){
+bool Service::cd(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string id = json.value("id", "");
     std::filesystem::path path = json.value("path", "");
@@ -49,13 +60,14 @@ bool Service::cd(json json){
     std::filesystem::path next_path = ((fs.m_map[id])->cwd() / path).lexically_normal();
 
     std::cout << "cd / id = " << id << " path = " << next_path << std::endl;
-    if(!(fs.m_map[id])->exists(next_path)){
+    if(!std::filesystem::exists(next_path)){
         return 0;
     }
-    return (fs.m_map[id])->set_cwd(next_path);
+    (fs.m_map[id])->set_cwd(next_path);
+    return 1;
 }
 
-std::string Service::cwd(json json){
+std::string Service::cwd(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string id = json.value("id", "");
     if(fs.m_map.find(id) == fs.m_map.end()){
@@ -74,7 +86,7 @@ nlohmann::json Service::ls(const std::string& id){
     return (fs.m_map[id])->ls();
 }
 
-int32_t Service::rmdir(json json){
+int32_t Service::rmdir(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string path = json.value("path", "");
     std::string id = json.value("id", "");
@@ -87,7 +99,7 @@ int32_t Service::rmdir(json json){
     return (fs.m_map[id])->rmdir(path);
 }
 
-int32_t Service::rm(json json){
+int32_t Service::rm(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string path = json.value("path", "");
     std::string id = json.value("id", "");
@@ -102,7 +114,7 @@ int32_t Service::rm(json json){
 
 void Service::download(
     const std::string& id, const std::filesystem::path& path, 
-    std::shared_ptr<Session> self
+    Session_ptr self
 ){
     auto& fs = FsHelper::get_instance();
     auto cwd = (fs.m_map[id])->cwd();
@@ -121,7 +133,7 @@ void Service::download(
 
 void Service::upload(
     const std::string& id, const std::filesystem::path& path, 
-    std::shared_ptr<Session> self
+    Session_ptr self
 ){
     auto& fs = FsHelper::get_instance();
     auto cwd = (fs.m_map[id])->cwd();

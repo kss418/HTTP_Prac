@@ -49,7 +49,8 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
         return;
     }
 
-    Service::sign_in(*json, arg[1], logged_in);
+    logged_in = 1;
+    Service::sign_in(*json, arg[1]);
 }
 
 void CmdHelper::sign_up(const std::vector<std::string>& arg){
