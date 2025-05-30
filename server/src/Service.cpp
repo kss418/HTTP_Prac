@@ -50,6 +50,14 @@ void Service::mkdir(const json& json, Session_ptr self){
     std::string path = json.value("path", "");
     std::string id = json.value("id", "");
     
+    if(id.empty() || path.empty()){
+        self->write_string(
+            http::status::bad_request, 
+            {{"message", "요청 형식이 잘못 되었습니다."}}
+        );
+        return;
+    }
+    
     auto& executer = fs.get_executer(id);
     if(executer.mkdir(path)){
         self->write_empty(http::status::ok);
@@ -58,6 +66,44 @@ void Service::mkdir(const json& json, Session_ptr self){
         self->write_string(
             http::status::conflict, 
             {{"message", "해당 이름을 가진 폴더나 파일이 존재합니다."}}
+        );
+    }
+}
+
+void Service::rmdir(const json& json, Session_ptr self){
+    auto& fs = FsHelper::get_instance();
+    std::string path = json.value("path", "");
+    std::string id = json.value("id", "");
+    
+    if(id.empty() || path.empty()){
+        self->write_string(
+            http::status::bad_request, 
+            {{"message", "요청 형식이 잘못 되었습니다."}}
+        );
+        return;
+    }
+
+    auto& executer = fs.get_executer(id);
+    int8_t ret = executer.rmdir(path);
+    if(!ret){
+        self->write_empty(http::status::ok);
+    }
+    else if(ret == 1){
+        self->write_string(
+            http::status::not_found, 
+            {{"message", "해당 디렉토리가 존재하지 않습니다."}}
+        );
+    }
+    else if(ret == 2){
+        self->write_string(
+            http::status::conflict, 
+            {{"message", "해당 경로가 디렉토리가 아닙니다."}}
+        );
+    }
+    else{
+        self->write_string(
+            http::status::conflict, 
+            {{"message", "해당 디렉토리가 비어 있지 않습니다."}}
         );
     }
 }
@@ -97,19 +143,6 @@ nlohmann::json Service::ls(const std::string& id){
     }
 
     return (fs.m_map[id])->ls();
-}
-
-int32_t Service::rmdir(const json& json){
-    auto& fs = FsHelper::get_instance();
-    std::string path = json.value("path", "");
-    std::string id = json.value("id", "");
-    if(path.empty()) return -1;
-
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
-    }
-
-    return (fs.m_map[id])->rmdir(path);
 }
 
 int32_t Service::rm(const json& json){

@@ -20,6 +20,10 @@ void Service::server_mkdir(){
     std::cout << "디렉토리 생성 성공" << std::endl;
 }
 
+void Service::server_rmdir(){
+    std::cout << "디렉토리 삭제 성공" << std::endl;
+}
+
 void Service::server_cd(const json& json){
     bool ret = json.value("result", 0);
     std::string ret_path = json.value("path", "");
@@ -49,23 +53,6 @@ void Service::server_ls(const json& json){
             std::cout << "[FILE] ";
         }
         std::cout << file_name << std::endl;
-    }
-}
-
-void Service::server_rmdir(const json& json){
-    int32_t ret = json.value("result", -1);
-
-    if(ret == -1){
-        std::cout << "서버 응답 오류" << std::endl;
-    }
-    else if(ret == 1){
-        std::cout << "대상 디렉토리가 존재하지 않습니다." << std::endl;
-    }
-    else if(ret == 2){
-        std::cout << "대상이 디렉토리가 아닙니다" << std::endl;
-    }
-    else if(ret == 3){
-        std::cout << "빈 디렉토리가 아닙니다." << std::endl;
     }
 }
 

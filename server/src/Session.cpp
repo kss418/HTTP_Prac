@@ -211,8 +211,7 @@ void Session::execute_string_request(
         Service::mkdir(json, self);
     }
     else if(method == http::verb::delete_ && path == "/rmdir"){
-        int32_t ret = Service::rmdir(json);
-        write_string(http::status::ok, {{"result", ret}});
+        Service::rmdir(json, self);
     }
     else if(method == http::verb::delete_ && path == "/rm"){
         std::cout << 1 << std::endl;

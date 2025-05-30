@@ -11,7 +11,7 @@ public:
     std::filesystem::path cwd() const;
     void set_cwd(const std::filesystem::path& dir_path);
     bool mkdir(const std::filesystem::path& any_path);
-    int32_t rmdir(const std::filesystem::path& any_path);
+    int8_t rmdir(const std::filesystem::path& any_path);
     int32_t rm(const std::filesystem::path& any_path);
     nlohmann::json ls() const;
     
