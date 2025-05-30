@@ -100,10 +100,9 @@ void Session::write_empty(
     );
 }
 
-/*
 void Session::write_file(
-    const http::verb& method, 
-    const std::string& target
+    const http::verb& method, const std::string& target, 
+    const std::filesystem::path& path
 ){
     auto connect = std::async(
         std::launch::async, [self = shared_from_this()]{
@@ -113,7 +112,7 @@ void Session::write_file(
     if(!connect.get()){
         return;
     }
-
+    
     auto req = std::make_shared<http::request<http::file_body>>(
         method, target, 11
     );
@@ -132,10 +131,8 @@ void Session::write_file(
         }
     );
 }
-*/
 
-
-var_parser Session::read(){
+var_parser Session::read(const std::filesystem::path& path){
     auto prom = std::make_shared<std::promise<var_parser>>();
     auto fut = prom->get_future();
 
@@ -194,13 +191,18 @@ void Session::read_empty(
     );
 }
 
-/*
-void Session::read_file(const std::string& path, const std::string& file_name){
+
+void Session::read_file(
+    std::shared_ptr<std::promise<var_parser>> prom,
+    const std::filesystem::path& path
+){
     auto const& header = m_res_header->get();
-    auto parser = std::make_shared<http::request_parser<http::file_body>>(std::move(*m_res_header));
+    auto parser = std::make_shared<http::response_parser<http::file_body>>(std::move(*m_res_header));
 
     boost::system::error_code ec;
-    std::string full_path = path + "/" + file_name;
+    std::string file_name = parser->get()["X-File-Name"];
+    std::string full_path = path.string() + "/" + file_name;
+    std::cout << full_path << std::endl;
     parser->get().body().open(
         full_path.c_str(),
         boost::beast::file_mode::write, ec
@@ -215,11 +217,10 @@ void Session::read_file(const std::string& path, const std::string& file_name){
         m_socket,
         m_buffer,
         *parser,
-        [self = shared_from_this(), parser](
+        [self = shared_from_this(), parser, prom](
             const boost::system::error_code& ec, std::size_t bytes
         ){
-            self->handle_read_file(ec, parser);
+            self->handle_read_file(ec, parser, prom);
         }
     );
 }
-*/

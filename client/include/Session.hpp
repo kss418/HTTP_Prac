@@ -37,19 +37,19 @@ public:
         const std::string& target
     );
     void write_file(
-        const http::verb& method, 
-        const std::string& target
+        const http::verb& method, const std::string& target,
+        const std::filesystem::path& path
     );
 
     bool connect();
 
-    var_parser read();
+    var_parser read(const std::filesystem::path& path = "");
 
     void read_string(std::shared_ptr<std::promise<var_parser>> prom);
     void read_empty(std::shared_ptr<std::promise<var_parser>> prom);
     void read_file(
-        const std::string& path, 
-        const std::string& file_name
+        std::shared_ptr<std::promise<var_parser>> prom,
+        const std::filesystem::path& path
     );
 private:
     tcp::endpoint m_endpoint;
@@ -69,7 +69,8 @@ private:
 
     void handle_read_header(
         const boost::system::error_code& ec,
-        std::shared_ptr<std::promise<var_parser>> prom
+        std::shared_ptr<std::promise<var_parser>> prom,
+        const std::filesystem::path& path = ""
     );
     void handle_read_string(
         const boost::system::error_code& ec,

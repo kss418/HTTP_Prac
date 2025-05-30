@@ -100,9 +100,41 @@ int32_t Service::rm(json json){
     return (fs.m_map[id])->rm(path);
 }
 
-void upload(
-    const std::string& id, const std::string& path, 
-    const std::string& file_name
+void Service::download(
+    const std::string& id, const std::filesystem::path& path, 
+    std::shared_ptr<Session> self
 ){
-    
+    auto& fs = FsHelper::get_instance();
+    auto cwd = (fs.m_map[id])->cwd();
+    std::string full_path = path.is_absolute() ? path : cwd / path;
+
+    if(!std::filesystem::exists(full_path)){
+        self->write_string(
+            http::status::not_found, 
+            {{"message", "해당 파일이 존재하지 않습니다."}}
+        );
+    }
+    else{
+        self->write_file(http::status::ok, full_path);
+    }   
+}
+
+void Service::upload(
+    const std::string& id, const std::filesystem::path& path, 
+    std::shared_ptr<Session> self
+){
+    auto& fs = FsHelper::get_instance();
+    auto cwd = (fs.m_map[id])->cwd();
+    std::string full_path = path.is_absolute() ? path : cwd / path;
+
+    if(std::filesystem::exists(full_path)){
+        self->write_string(
+            http::status::conflict, 
+            {{"message", "중복된 이름의 파일이 존재합니다."}}
+        );
+    }
+    else{
+        self->read_file(path);
+        self->write_empty(http::status::ok);
+    }   
 }

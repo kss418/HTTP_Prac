@@ -91,6 +91,7 @@ void Session::write_empty(http::status status){
         status, 11
     );
     res->set(http::field::server, BOOST_BEAST_VERSION_STRING);
+    res->set("X-Body-Type", "empty_body");
 
     http::async_write(
         *m_socket,
@@ -109,6 +110,7 @@ void Session::write_string(http::status status, const nlohmann::json& json){
         status, 11
     );
     res->set(http::field::server, BOOST_BEAST_VERSION_STRING);
+    res->set("X-Body-Type", "string_body");
 
     std::string body = json.dump();
     if(!body.empty()){
@@ -138,6 +140,8 @@ void Session::write_file(
 
     res->set(http::field::server, BOOST_BEAST_VERSION_STRING);
     res->body().open(full_path.c_str(), boost::beast::file_mode::scan, ec);
+    res->set("X-File-Name", full_path.filename().string());
+    res->set("X-Body-Type", "file_body");
 
     if(ec == boost::beast::errc::no_such_file_or_directory){
         write_empty(http::status::not_found);
@@ -253,7 +257,7 @@ void Session::execute_empty_request(
             write_empty(http::status::bad_request);
             return;
         }
-
+        Service::download(map["id"], map["path"], shared_from_this());
     }
     else{
         write_empty(http::status::bad_request);

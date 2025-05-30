@@ -18,14 +18,14 @@ public:
     void read_file(const std::string& full_path);
     void read_empty();
     void read_string();
-private:
-    std::shared_ptr<tcp::socket> m_socket;
-    boost::beast::flat_buffer m_buffer;
-    std::shared_ptr<http::request_parser<http::empty_body>> m_req_header;
 
     void write_string(http::status status, const nlohmann::json& json = {});
     void write_file(http::status status, const std::filesystem::path& full_path);
     void write_empty(http::status status);
+private:
+    std::shared_ptr<tcp::socket> m_socket;
+    boost::beast::flat_buffer m_buffer;
+    std::shared_ptr<http::request_parser<http::empty_body>> m_req_header;
 
     void execute_string_request(std::shared_ptr<http::request_parser<http::string_body>> parser);
     void execute_empty_request(std::shared_ptr<http::request_parser<http::empty_body>> parser);
@@ -61,10 +61,13 @@ namespace Service{
     int32_t rm(json json);
     int32_t rmdir(json json);
     void upload(
-        const std::string& id, const std::string& path, 
-        const std::string& file_name
+        const std::string& id, const std::filesystem::path& path,
+        std::shared_ptr<Session> self
     );
-    void download(const std::string& id, const std::string& path);
+    void download(
+        const std::string& id, const std::filesystem::path& path,
+        std::shared_ptr<Session> self
+    );
 
     std::string cwd(json json);
 };
