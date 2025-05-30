@@ -3,13 +3,24 @@
 #include "../include/FsHelper.hpp"
 #include <iostream>
 
-bool Service::sign_in(const json& json){
+void Service::sign_in(const json& json, Session_ptr self){
     auto& db_helper = DBHelper::get_instance();
     std::string id = json.value("id", "");
     std::string pw = json.value("pw", "");
-    
-    std::cout << "로그인 / id = " << id << std::endl;
-    return db_helper.match_pw(id, pw);
+
+    std::string cwd = Service::cwd(json);
+    if(db_helper.match_pw(id, pw)){
+        self->write_string(
+            http::status::ok, 
+            {{"path", cwd}}
+        );
+    }   
+    else{
+        self->write_string(
+            http::status::unauthorized, 
+            {{"message", "아이디 또는 비밀번호가 일치하지 않습니다."}}
+        );
+    }
 }
 
 bool Service::sign_up(const json& json){
@@ -103,7 +114,7 @@ int32_t Service::rm(const json& json){
 
 void Service::download(
     const std::string& id, const std::filesystem::path& path, 
-    std::shared_ptr<Session> self
+    Session_ptr self
 ){
     auto& fs = FsHelper::get_instance();
     auto cwd = (fs.m_map[id])->cwd();
@@ -122,7 +133,7 @@ void Service::download(
 
 void Service::upload(
     const std::string& id, const std::filesystem::path& path, 
-    std::shared_ptr<Session> self
+    Session_ptr self
 ){
     auto& fs = FsHelper::get_instance();
     auto cwd = (fs.m_map[id])->cwd();
