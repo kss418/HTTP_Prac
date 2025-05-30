@@ -140,11 +140,11 @@ var_parser Session::read(const std::filesystem::path& path){
         m_socket,
         m_buffer,
         *m_res_header,
-        [self = shared_from_this(), prom](
+        [self = shared_from_this(), prom, path](
             const boost::system::error_code& ec,
             std::size_t bytes_transferred
         ){
-            self->handle_read_header(ec, prom);
+            self->handle_read_header(ec, prom, path);
         }
     );
 
@@ -209,7 +209,7 @@ void Session::read_file(
     );
 
     if(ec){
-        std::cout << "업로드 실패 : " << ec.message() << std::endl;
+        std::cout << "다운로드 실패 : " << ec.message() << std::endl;
         return;
     }
 

@@ -240,7 +240,10 @@ void Session::execute_empty_request(
     auto target = req.target();
     auto const uri = boost::urls::parse_relative_ref(target);
     if(!uri){
-        write_empty(http::status::bad_request);
+        write_string(
+            http::status::bad_request,
+            {{"message", "올바르지 않은 URI 입니다."}}
+        );
         return;
     }
 

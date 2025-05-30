@@ -262,9 +262,9 @@ void ServerFsHelper::download(
     
     std::future<void> write_fut = std::async(
         std::launch::async, [this, session, cwd]{
-            session->write_string(
-                http::verb::get, "/download",
-                {{"id", m_id}, {"path", cwd}}
+            session->write_empty(
+                http::verb::get, "/download?id=" + 
+                m_id + "&path=" + cwd.string()
             );
         }
     );
@@ -278,9 +278,15 @@ void ServerFsHelper::download(
     );
     auto var = read_fut.get();
 
-    if(!std::holds_alternative<file_parser>(var)){
-        std::cout << "서버 응답 오류" << std::endl;
-        return;
+    if(std::holds_alternative<string_parser>(var)){
+        auto res = std::get<string_parser>(var)->get();
+        auto json = Utility::parse_json(res.body());
+        if(!json){
+            std::cerr << json.error() << std::endl;
+            return;
+        }
+        
+        std::cout << (*json)["message"] << std::endl;
     }
 }
 
