@@ -28,9 +28,7 @@ public:
         boost::asio::io_context& io_context
     );
 
-    std::vector<std::pair<std::string, bool>> ls(
-        boost::asio::io_context& io_context
-    );
+    void ls(boost::asio::io_context& io_context);
     
     void cd(
         const std::filesystem::path& path,

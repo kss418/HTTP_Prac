@@ -1,7 +1,8 @@
 #include "../include/ServerFsHelper.hpp"
 #include "../include/Session.hpp"
 #include "../include/Download.hpp"
-#include "../include/Upload.hpp"
+#include "../include/Utility.hpp"
+#include "../include/Service.hpp"
 #include <iostream>
 #include <mutex>
 
@@ -32,178 +33,226 @@ void ServerFsHelper::mkdir(
     const std::filesystem::path& path,
     boost::asio::io_context& io_context
 ){
-    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
-    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
-
-    Session session(
-        io_context, "127.0.0.1", 8080, 
-        prom, http::verb::post, "/mkdir", {{"id", m_id}, {"path", path}}
+    auto session = std::make_shared<Session>(
+        io_context, "127.0.0.1", 8080
     );
-
     
-    std::shared_ptr<http::response <http::string_body>> res = fut.get();
-    if(res->result() != http::status::ok){
-        std::cout << "Status code : " << res->result() << std::endl;
+    std::future<void> write_fut = std::async(
+        std::launch::async, [this, session, path]{
+            session->write_string(
+                http::verb::post, "/mkdir",
+                {{"id", m_id}, {"path", path}}
+            );
+        }
+    );
+    write_fut.get();
+
+    std::future<var_parser> read_fut = std::async(
+        std::launch::async, [session]{
+            return session->read();
+        }
+    );
+    auto var = read_fut.get();
+
+    if(!std::holds_alternative<string_parser>(var)){
+        std::cout << "서버 응답 오류" << std::endl;
+        return;
+    }
+    auto res = std::get<string_parser>(var)->get();
+    auto json = Utility::parse_json(res.body());
+    if(!json){
+        std::cerr << json.error() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res->body())){
-        std::cout << "서버 응답 파싱 불가" << std::endl;
+    if(res.result() != http::status::ok){
+        auto message = json->value("message", "");
+        std::cout << message << std::endl;
         return;
     }
 
-    auto json = nlohmann::json::parse(res->body());
-    bool ret = json.value("result", 0);
-    if(!ret){
-        std::cout << "이미 존재하는 디렉토리입니다." << std::endl;
-    }
+    Service::server_mkdir(*json);
 }
 
 void ServerFsHelper::cd(
     const std::filesystem::path& path, 
     boost::asio::io_context& io_context
 ){
-    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
-    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
-
-    Session session(
-        io_context, "127.0.0.1", 8080, 
-        prom, http::verb::post, "/cd", {{"id", m_id}, {"path", path}}
+    auto session = std::make_shared<Session>(
+        io_context, "127.0.0.1", 8080
     );
+    
+    std::future<void> write_fut = std::async(
+        std::launch::async, [this, session, path]{
+            session->write_string(
+                http::verb::post, "/cd",
+                {{"id", m_id}, {"path", path}}
+            );
+        }
+    );
+    write_fut.get();
 
-    std::shared_ptr<http::response <http::string_body>> res = fut.get();
-    if(res->result() != http::status::ok){
-        std::cout << "Status code : " << res->result() << std::endl;
+    std::future<var_parser> read_fut = std::async(
+        std::launch::async, [session]{
+            return session->read();
+        }
+    );
+    auto var = read_fut.get();
+
+    if(!std::holds_alternative<string_parser>(var)){
+        std::cout << "서버 응답 오류" << std::endl;
+        return;
+    }
+    auto res = std::get<string_parser>(var)->get();
+    auto json = Utility::parse_json(res.body());
+    if(!json){
+        std::cerr << json.error() << std::endl;
         return;
     }
 
-    if(!nlohmann::json::accept(res->body())){
-        std::cout << "서버 응답 파싱 불가" << std::endl;
+    if(res.result() != http::status::ok){
+        auto message = json->value("message", "");
+        std::cout << message << std::endl;
         return;
     }
 
-    auto json = nlohmann::json::parse(res->body());
-    bool ret = json.value("result", 0);
-    std::string ret_path = json.value("path", "");
-    if(!ret){
-        std::cout << "대상 디렉토리가 없습니다." << std::endl;
-    }
-    else{
-        set_cwd(ret_path);
-    }
+    Service::server_cd(*json);
 }
 
-std::vector<std::pair<std::string, bool>> ServerFsHelper::ls(
+void ServerFsHelper::ls(
     boost::asio::io_context& io_context
-){
-    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
-    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
-
-    Session session(
-        io_context, "127.0.0.1", 8080, 
-        prom, http::verb::get, "/ls?id=" + m_id
+){  
+    auto session = std::make_shared<Session>(
+        io_context, "127.0.0.1", 8080
     );
     
-    std::shared_ptr<http::response <http::string_body>> res = fut.get();
-    if(res->result() != http::status::ok){
-        std::cout << "Status code : " << res->result() << std::endl;
-        return {};
+    std::future<void> write_fut = std::async(
+        std::launch::async, [this, session]{
+            session->write_empty(
+                http::verb::get, "/ls?id=" + m_id
+            );
+        }
+    );
+    write_fut.get();
+
+    std::future<var_parser> read_fut = std::async(
+        std::launch::async, [session]{
+            return session->read();
+        }
+    );
+    auto var = read_fut.get();
+
+    if(!std::holds_alternative<string_parser>(var)){
+        std::cout << "서버 응답 오류" << std::endl;
+        return;
+    }
+    auto res = std::get<string_parser>(var)->get();
+    auto json = Utility::parse_json(res.body());
+    if(!json){
+        std::cerr << json.error() << std::endl;
+        return;
     }
 
-    if(!nlohmann::json::accept(res->body())){
-        std::cout << "서버 응답 파싱 불가" << std::endl;
-        return {};
+    if(res.result() != http::status::ok){
+        auto message = json->value("message", "");
+        std::cout << message << std::endl;
+        return;
     }
 
-    auto json = nlohmann::json::parse(res->body());
-    auto file_name = json["file_name"].get<std::vector<std::string>>();
-    auto is_dir = json["is_dir"].get<std::vector<bool>>();
-    
-    std::vector<std::pair<std::string, bool>> ret;
-    for(int i = 0;i < file_name.size();i++){
-        ret.push_back({file_name[i], is_dir[i]});
-    }
-
-    return ret;
+    Service::server_ls(*json);
 }
 
 void ServerFsHelper::rmdir(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
 ){
-    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
-    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
-
-    Session session(
-        io_context, "127.0.0.1", 8080, 
-        prom, http::verb::delete_, "/rmdir", {{"id", m_id}, {"path", cwd}}
+    auto session = std::make_shared<Session>(
+        io_context, "127.0.0.1", 8080
     );
+    
+    std::future<void> write_fut = std::async(
+        std::launch::async, [this, session, cwd]{
+            session->write_string(
+                http::verb::delete_, "/rmdir",
+                {{"id", m_id}, {"path", cwd}}
+            );
+        }
+    );
+    write_fut.get();
 
-    std::shared_ptr<http::response <http::string_body>> res = fut.get();
-    if(res->result() != http::status::ok){
-        std::cout << "Status code : " << res->result() << std::endl;
-        return;
-    }
+    std::future<var_parser> read_fut = std::async(
+        std::launch::async, [session]{
+            return session->read();
+        }
+    );
+    auto var = read_fut.get();
 
-    if(!nlohmann::json::accept(res->body())){
-        std::cout << "서버 응답 파싱 불가" << std::endl;
-        return;
-    }
-
-    auto json = nlohmann::json::parse(res->body());
-    int32_t ret = json.value("result", -1);
-
-    if(ret == -1){
+    if(!std::holds_alternative<string_parser>(var)){
         std::cout << "서버 응답 오류" << std::endl;
+        return;
     }
-    else if(ret == 1){
-        std::cout << "대상 디렉토리가 존재하지 않습니다." << std::endl;
+    auto res = std::get<string_parser>(var)->get();
+    auto json = Utility::parse_json(res.body());
+    if(!json){
+        std::cerr << json.error() << std::endl;
+        return;
     }
-    else if(ret == 2){
-        std::cout << "대상이 디렉토리가 아닙니다" << std::endl;
+
+    if(res.result() != http::status::ok){
+        auto message = json->value("message", "");
+        std::cout << message << std::endl;
+        return;
     }
-    else if(ret == 3){
-        std::cout << "빈 디렉토리가 아닙니다." << std::endl;
-    }
+
+    Service::server_rmdir(*json);
 }
 
 void ServerFsHelper::rm(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
 ){
-    std::promise <std::shared_ptr<http::response <http::string_body>>> prom;
-    std::future <std::shared_ptr<http::response <http::string_body>>> fut = prom.get_future();
-
-    Session session(
-        io_context, "127.0.0.1", 8080, 
-        prom, http::verb::delete_, "/rm", {{"id", m_id}, {"path", cwd}}
+    auto session = std::make_shared<Session>(
+        io_context, "127.0.0.1", 8080
     );
     
-    std::shared_ptr<http::response <http::string_body>> res = fut.get();
-    if(res->result() != http::status::ok){
-        std::cout << "Status code : " << res->result() << std::endl;
-        return;
-    }
+    std::future<void> write_fut = std::async(
+        std::launch::async, [this, session, cwd]{
+            session->write_string(
+                http::verb::delete_, "/rm",
+                {{"id", m_id}, {"path", cwd}}
+            );
+        }
+    );
+    write_fut.get();
 
-    if(!nlohmann::json::accept(res->body())){
-        std::cout << "서버 응답 파싱 불가" << std::endl;
-        return;
-    }
+    std::future<var_parser> read_fut = std::async(
+        std::launch::async, [session]{
+            return session->read();
+        }
+    );
+    auto var = read_fut.get();
 
-    auto json = nlohmann::json::parse(res->body());
-    int32_t ret = json.value("result", -1);
-
-    if(ret == -1){
+    if(!std::holds_alternative<string_parser>(var)){
         std::cout << "서버 응답 오류" << std::endl;
+        return;
     }
-    else if(ret == 1){
-        std::cout << "대상 파일이 존재하지 않습니다." << std::endl;
+    auto res = std::get<string_parser>(var)->get();
+    auto json = Utility::parse_json(res.body());
+    if(!json){
+        std::cerr << json.error() << std::endl;
+        return;
     }
-    else if(ret == 2){
-        std::cout << "대상이 파일이 아닙니다." << std::endl;
+
+    if(res.result() != http::status::ok){
+        auto message = json->value("message", "");
+        std::cout << message << std::endl;
+        return;
     }
+
+    Service::server_rmdir(*json);
 }
 
+/*
 int32_t ServerFsHelper::exist(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
@@ -243,7 +292,9 @@ int32_t ServerFsHelper::exist(
 
     return ret;
 }
+*/
 
+/*
 void ServerFsHelper::download(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
@@ -279,6 +330,7 @@ void ServerFsHelper::upload(
     );
     file_session->connect();
 }
+*/
 
 
 

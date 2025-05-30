@@ -212,6 +212,7 @@ void Session::execute_string_request(
         write_string(http::status::ok, {{"result", ret}});
     }
     else if(method == http::verb::delete_ && path == "/rm"){
+        std::cout << 1 << std::endl;
         int32_t ret = Service::rm(json);
         write_string(http::status::ok, {{"result", ret}});
     }

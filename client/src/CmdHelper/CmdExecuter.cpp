@@ -19,10 +19,10 @@ void CmdHelper::login_execute(const std::vector<std::string>& arg){
         logout();
     }
     else if(arg[0] == "download"){
-        download(arg);
+        //download(arg);
     }
     else if(arg[0] == "upload"){
-        upload(arg);
+        //upload(arg);
     }
     else if(!path_state){
         local_execute(arg);
