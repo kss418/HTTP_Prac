@@ -76,6 +76,53 @@ void ServerFsHelper::mkdir(
     }
 }
 
+void ServerFsHelper::rmdir(
+    const std::filesystem::path& cwd,
+    boost::asio::io_context& io_context
+){
+    auto session = std::make_shared<Session>(
+        io_context, "127.0.0.1", 8080
+    );
+    
+    std::future<void> write_fut = std::async(
+        std::launch::async, [this, session, cwd]{
+            session->write_string(
+                http::verb::delete_, "/rmdir",
+                {{"id", m_id}, {"path", cwd}}
+            );
+        }
+    );
+    write_fut.get();
+
+    std::future<var_parser> read_fut = std::async(
+        std::launch::async, [session]{
+            return session->read();
+        }
+    );
+    auto var = read_fut.get();
+
+    if(std::holds_alternative<empty_parser>(var)){
+        Service::server_rmdir();
+    }
+    else if(std::holds_alternative<string_parser>(var)){
+        auto res = std::get<string_parser>(var)->get();
+        auto json = Utility::parse_json(res.body());
+        if(!json){
+            std::cerr << json.error() << std::endl;
+            return;
+        }
+
+        if(res.result() != http::status::ok){
+            auto message = json->value("message", "");
+            std::cout << message << std::endl;
+            return;
+        }
+    }
+    else{
+        std::cout << "서버 응답 오류" << std::endl;
+    }
+}
+
 void ServerFsHelper::cd(
     const std::filesystem::path& path, 
     boost::asio::io_context& io_context
@@ -164,51 +211,6 @@ void ServerFsHelper::ls(
     Service::server_ls(*json);
 }
 
-void ServerFsHelper::rmdir(
-    const std::filesystem::path& cwd,
-    boost::asio::io_context& io_context
-){
-    auto session = std::make_shared<Session>(
-        io_context, "127.0.0.1", 8080
-    );
-    
-    std::future<void> write_fut = std::async(
-        std::launch::async, [this, session, cwd]{
-            session->write_string(
-                http::verb::delete_, "/rmdir",
-                {{"id", m_id}, {"path", cwd}}
-            );
-        }
-    );
-    write_fut.get();
-
-    std::future<var_parser> read_fut = std::async(
-        std::launch::async, [session]{
-            return session->read();
-        }
-    );
-    auto var = read_fut.get();
-
-    if(!std::holds_alternative<string_parser>(var)){
-        std::cout << "서버 응답 오류" << std::endl;
-        return;
-    }
-    auto res = std::get<string_parser>(var)->get();
-    auto json = Utility::parse_json(res.body());
-    if(!json){
-        std::cerr << json.error() << std::endl;
-        return;
-    }
-
-    if(res.result() != http::status::ok){
-        auto message = json->value("message", "");
-        std::cout << message << std::endl;
-        return;
-    }
-
-    Service::server_rmdir(*json);
-}
-
 void ServerFsHelper::rm(
     const std::filesystem::path& cwd,
     boost::asio::io_context& io_context
@@ -251,7 +253,7 @@ void ServerFsHelper::rm(
         return;
     }
 
-    Service::server_rmdir(*json);
+    Service::server_rm(*json);
 }
 
 void ServerFsHelper::download(

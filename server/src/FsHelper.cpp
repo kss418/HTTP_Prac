@@ -39,7 +39,7 @@ bool FsExecuter::mkdir(const std::filesystem::path& any_path){
     return std::filesystem::create_directories(next_path);
 }
 
-int32_t FsExecuter::rmdir(const std::filesystem::path& any_path){
+int8_t FsExecuter::rmdir(const std::filesystem::path& any_path){
     const auto next_path = any_path.is_absolute() 
         ? any_path : (m_working_path / any_path);
     if(!std::filesystem::exists(next_path)){

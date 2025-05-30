@@ -57,10 +57,11 @@ namespace Service{
     void sign_up(const json& json, Session_ptr self);
 
     void mkdir(const json& json, Session_ptr self);
+    void rmdir(const json& json, Session_ptr self);
     bool cd(const json& json);
     json ls(const std::string& id);
     int32_t rm(const json& json);
-    int32_t rmdir(const json& json);
+    
     void upload(
         const std::string& id, const std::filesystem::path& path,
         Session_ptr self
