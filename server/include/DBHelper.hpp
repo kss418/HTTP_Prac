@@ -1,5 +1,5 @@
 #pragma once
-#include <mariadb/conncpp.hpp>
+#include <pqxx/pqxx>
 #include <string>
 #include <mutex>
 #include <memory>
@@ -17,7 +17,7 @@ public:
     DBHelper(DBHelper&&) = delete;
     DBHelper& operator=(DBHelper&&) = delete;
 private:
-    std::unique_ptr<sql::Connection> connection;
+    std::unique_ptr<pqxx::connection> connection;
     static std::once_flag m_init_flag;
     static std::unique_ptr<DBHelper> m_instance;
 };

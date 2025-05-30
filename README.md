@@ -1,6 +1,6 @@
 # HTTP 서버를 사용한 원격 드라이브
 
-DB -> Maria DB
+DB -> PostgreSQL
 
 tcp, http -> Boost
 

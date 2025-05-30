@@ -1,5 +1,4 @@
 #include <iostream>
-#include <mariadb/conncpp.hpp>
 #include <boost/asio.hpp>
 #include <boost/beast.hpp>
 #include "include/DBHelper.hpp"
