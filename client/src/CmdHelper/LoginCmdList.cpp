@@ -84,7 +84,7 @@ void CmdHelper::sign_up(const std::vector<std::string>& arg){
     );
     auto var = read_fut.get();
 
-   if(std::holds_alternative<string_parser>(var)){
+   if(!std::holds_alternative<string_parser>(var)){
         std::cout << "서버 응답 오류" << std::endl;
         return;
     }

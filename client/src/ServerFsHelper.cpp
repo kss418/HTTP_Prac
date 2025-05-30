@@ -54,7 +54,7 @@ void ServerFsHelper::mkdir(
     );
     auto var = read_fut.get();
 
-    if(std::holds_alternative<string_parser>(var)){
+    if(!std::holds_alternative<string_parser>(var)){
         std::cout << "서버 응답 오류" << std::endl;
         return;
     }
@@ -99,7 +99,7 @@ void ServerFsHelper::cd(
     );
     auto var = read_fut.get();
 
-    if(std::holds_alternative<string_parser>(var)){
+    if(!std::holds_alternative<string_parser>(var)){
         std::cout << "서버 응답 오류" << std::endl;
         return;
     }
@@ -142,7 +142,7 @@ void ServerFsHelper::ls(
     );
     auto var = read_fut.get();
 
-    if(std::holds_alternative<string_parser>(var)){
+    if(!std::holds_alternative<string_parser>(var)){
         std::cout << "서버 응답 오류" << std::endl;
         return;
     }
@@ -173,7 +173,7 @@ void ServerFsHelper::rmdir(
     std::future<void> write_fut = std::async(
         std::launch::async, [this, session, cwd]{
             session->write_string(
-                http::verb::delete_, "rmdir",
+                http::verb::delete_, "/rmdir",
                 {{"id", m_id}, {"path", cwd}}
             );
         }
@@ -187,7 +187,7 @@ void ServerFsHelper::rmdir(
     );
     auto var = read_fut.get();
 
-    if(std::holds_alternative<string_parser>(var)){
+    if(!std::holds_alternative<string_parser>(var)){
         std::cout << "서버 응답 오류" << std::endl;
         return;
     }
@@ -218,7 +218,7 @@ void ServerFsHelper::rm(
     std::future<void> write_fut = std::async(
         std::launch::async, [this, session, cwd]{
             session->write_string(
-                http::verb::delete_, "rm",
+                http::verb::delete_, "/rm",
                 {{"id", m_id}, {"path", cwd}}
             );
         }
@@ -232,7 +232,7 @@ void ServerFsHelper::rm(
     );
     auto var = read_fut.get();
 
-    if(std::holds_alternative<string_parser>(var)){
+    if(!std::holds_alternative<string_parser>(var)){
         std::cout << "서버 응답 오류" << std::endl;
         return;
     }
