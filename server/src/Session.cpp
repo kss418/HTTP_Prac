@@ -144,12 +144,18 @@ void Session::write_file(
     res->set("X-Body-Type", "file_body");
 
     if(ec == boost::beast::errc::no_such_file_or_directory){
-        write_empty(http::status::not_found);
+        write_string(
+            http::status::not_found,
+            {{"message", "해당 파일이 존재하지 않습니다."}}
+        );
         return;
     }
 
     if(ec){
-        write_empty(http::status::internal_server_error);
+        write_string(
+            http::status::internal_server_error,
+            {{"message", "내부 서버 오류가 발생했습니다."}}
+        );
         return;
     }
     res->prepare_payload();
