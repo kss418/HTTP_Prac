@@ -23,30 +23,43 @@ void Service::sign_in(const json& json, Session_ptr self){
     }
 }
 
-bool Service::sign_up(const json& json){
+void Service::sign_up(const json& json, Session_ptr self){
     auto& db_helper = DBHelper::get_instance();
     std::string id = json.value("id", "");
     std::string pw = json.value("pw", "");
 
-    std::cout << "회원가입 / id = " << id << std::endl;
     if(id.empty() || pw.empty()){
-        return 0;
+        self->write_string(
+            http::status::bad_request, 
+            {{"message", "요청 형식이 잘못 되었습니다."}}
+        );
     }
-    
-    return db_helper.create_id(id, pw);
+    else if(!db_helper.create_id(id, pw)){
+        self->write_string(
+            http::status::conflict, 
+            {{"message", "이미 존재하는 아이디입니다."}}
+        );
+    }
+    else{
+        self->write_empty(http::status::ok);
+    }
 }
 
-bool Service::mkdir(const json& json){
+void Service::mkdir(const json& json, Session_ptr self){
     auto& fs = FsHelper::get_instance();
     std::string path = json.value("path", "");
     std::string id = json.value("id", "");
     
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
+    auto& executer = fs.get_executer(id);
+    if(executer.mkdir(path)){
+        self->write_empty(http::status::ok);
     }
-
-    std::cout << "mkdir / id = " << id << " path = " << path << std::endl;
-    return (fs.m_map[id])->mkdir(path);
+    else{
+        self->write_string(
+            http::status::conflict, 
+            {{"message", "해당 이름을 가진 폴더나 파일이 존재합니다."}}
+        );
+    }
 }
 
 bool Service::cd(const json& json){

@@ -32,25 +32,25 @@ void CmdHelper::sign_in(const std::vector<std::string>& arg){
     );
     auto var = read_fut.get();
 
-    if(!std::holds_alternative<string_parser>(var)){
+    if(std::holds_alternative<string_parser>(var)){
+        auto res = std::get<string_parser>(var)->get();
+        auto json = Utility::parse_json(res.body());
+        if(!json){
+            std::cerr << json.error() << std::endl;
+            return;
+        }
+
+        if(res.result() != http::status::ok){
+            auto message = json->value("message", "");
+            std::cout << message << std::endl;
+            return;
+        }
+
+        Service::sign_in(*json, arg[1], logged_in);
+    }
+    else{
         std::cout << "서버 응답 오류" << std::endl;
-        return;
     }
-    auto res = std::get<string_parser>(var)->get();
-    auto json = Utility::parse_json(res.body());
-    if(!json){
-        std::cerr << json.error() << std::endl;
-        return;
-    }
-
-    if(res.result() != http::status::ok){
-        auto message = json->value("message", "");
-        std::cout << message << std::endl;
-        return;
-    }
-
-    logged_in = 1;
-    Service::sign_in(*json, arg[1]);
 }
 
 void CmdHelper::sign_up(const std::vector<std::string>& arg){
@@ -85,28 +85,32 @@ void CmdHelper::sign_up(const std::vector<std::string>& arg){
     );
     auto var = read_fut.get();
 
-   if(!std::holds_alternative<string_parser>(var)){
+   if(std::holds_alternative<string_parser>(var)){
+        auto res = std::get<string_parser>(var)->get();
+        auto json = Utility::parse_json(res.body());
+        if(!json){
+            std::cerr << json.error() << std::endl;
+            return;
+        }
+
+        if(res.result() != http::status::ok){
+            auto message = json->value("message", "");
+            std::cout << message << std::endl;
+            return;
+        }
+    }
+    else if(std::holds_alternative<empty_parser>(var)){
+        auto res = std::get<empty_parser>(var)->get();
+        Service::sign_up();
+    }
+    else{
         std::cout << "서버 응답 오류" << std::endl;
-        return;
     }
-    auto res = std::get<string_parser>(var)->get();
-    auto json = Utility::parse_json(res.body());
-    if(!json){
-        std::cerr << json.error() << std::endl;
-        return;
-    }
-
-    if(res.result() != http::status::ok){
-        auto message = json->value("message", "");
-        std::cout << message << std::endl;
-        return;
-    }
-
-    Service::sign_up(*json);
 }
 
 void CmdHelper::logout(){
     std::cout << "로그아웃" << std::endl;
     id.clear();
+
     logged_in = 0;
 }

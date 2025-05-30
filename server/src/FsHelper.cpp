@@ -11,6 +11,16 @@ FsHelper& FsHelper::get_instance(){
     return *m_instance;
 }
 
+FsExecuter& FsHelper::get_executer(const std::string& id){
+    auto it = m_map.find(id);
+    if(it == m_map.end()){
+        m_map[id] = std::make_unique<FsExecuter>(id);
+        it = m_map.find(id);
+    }
+
+    return *(it->second);
+}
+
 FsExecuter::FsExecuter(const std::string& id)
   :  m_working_path(std::filesystem::current_path().root_directory() / "home" / "kss418" / id){  
 }
