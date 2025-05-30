@@ -1,4 +1,4 @@
-#include "../include/Service.hpp"
+#include "../include/Session.hpp"
 #include "../include/DBHelper.hpp"
 #include "../include/FsHelper.hpp"
 #include <iostream>
@@ -100,29 +100,41 @@ int32_t Service::rm(json json){
     return (fs.m_map[id])->rm(path);
 }
 
-int32_t Service::exist_file(
-    const std::string& id, const std::filesystem::path& path
+void Service::download(
+    const std::string& id, const std::filesystem::path& path, 
+    std::shared_ptr<Session> self
 ){
     auto& fs = FsHelper::get_instance();
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
-    }
+    auto cwd = (fs.m_map[id])->cwd();
+    std::string full_path = path.is_absolute() ? path : cwd / path;
 
-    auto next_path = (path.is_absolute() ? path : (fs.m_map[id])->cwd() / path);
-    if(!((fs.m_map[id])->exists(next_path))){
-        return 1;
+    if(!std::filesystem::exists(full_path)){
+        self->write_string(
+            http::status::not_found, 
+            {{"message", "해당 파일이 존재하지 않습니다."}}
+        );
     }
-
-    if(std::filesystem::is_directory(next_path)){
-        return 2;
-    }
-
-    return 0;
+    else{
+        self->write_file(http::status::ok, full_path);
+    }   
 }
 
-void upload(
-    const std::string& id, const std::string& path, 
-    const std::string& file_name
+void Service::upload(
+    const std::string& id, const std::filesystem::path& path, 
+    std::shared_ptr<Session> self
 ){
-    
+    auto& fs = FsHelper::get_instance();
+    auto cwd = (fs.m_map[id])->cwd();
+    std::string full_path = path.is_absolute() ? path : cwd / path;
+
+    if(std::filesystem::exists(full_path)){
+        self->write_string(
+            http::status::conflict, 
+            {{"message", "중복된 이름의 파일이 존재합니다."}}
+        );
+    }
+    else{
+        self->read_file(path);
+        self->write_empty(http::status::ok);
+    }   
 }

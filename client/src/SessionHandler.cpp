@@ -24,7 +24,8 @@ void Session::handle_write(
 
 void Session::handle_read_header(
     const boost::system::error_code& ec,
-    std::shared_ptr<std::promise<var_parser>> prom
+    std::shared_ptr<std::promise<var_parser>> prom,
+    const std::filesystem::path& path
 ){
     if(ec){
         std::cout << "헤더 읽기 실패 : " << ec.message() << std::endl;
@@ -32,6 +33,7 @@ void Session::handle_read_header(
     else{
         auto const& res_header = m_res_header->get();
         auto body_type = res_header["X-Body-Type"];
+        std::cout << body_type << std::endl;
 
         if(body_type.empty() || body_type == "string_body"){
             read_string(prom);
@@ -40,8 +42,7 @@ void Session::handle_read_header(
             read_empty(prom);
         }
         else if(body_type == "file_body"){
-            auto parser = std::make_shared<http::response_parser<http::file_body>>(std::move(*m_res_header));
-            prom->set_value(parser);
+            read_file(prom, path);
         }
         else{
 
@@ -50,8 +51,7 @@ void Session::handle_read_header(
 }
 
 void Session::handle_read_string(
-    const boost::system::error_code& ec,
-    std::shared_ptr<http::response_parser<http::string_body>> parser,
+    const boost::system::error_code& ec, string_parser parser,
     std::shared_ptr<std::promise<var_parser>> prom
 ){
     if(ec){
@@ -64,8 +64,7 @@ void Session::handle_read_string(
 }
 
 void Session::handle_read_empty(
-    const boost::system::error_code& ec,
-    std::shared_ptr<http::response_parser<http::empty_body>> parser,
+    const boost::system::error_code& ec, empty_parser parser,
     std::shared_ptr<std::promise<var_parser>> prom
 ){
     if(ec){
@@ -77,14 +76,16 @@ void Session::handle_read_empty(
     }
 }
 
-/*
+
 void Session::handle_read_file(
-    const boost::system::error_code& ec
+    const boost::system::error_code& ec, file_parser parser,
+    std::shared_ptr<std::promise<var_parser>> prom
 ){
     if(ec){
         std::cout << "file_body 읽기 실패 : " << ec.message() << std::endl;
+        prom->set_value(false);
     }
     else{
-
+        prom->set_value(parser);
     }
-*/
+}
