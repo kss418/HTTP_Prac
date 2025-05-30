@@ -42,7 +42,7 @@ DBHelper& DBHelper::get_instance(){
             {"password", std::getenv("DB_PASSWORD")},
             {"useTls", "true"},
             {"schema", "test"},
-            {"sslCa", "/etc/mysql/certs/ca.pem"},
+            {"tlsCA", "/etc/mysql/certs/ca.pem"},
             {"tlsCert", "/etc/mysql/certs/server-cert.pem"},
             {"tlsKey", "/etc/mysql/certs/server-key.pem"}
         });
