@@ -52,14 +52,14 @@ private:
 namespace Service{
     using json = nlohmann::json;
 
-    bool sign_in(json json);
-    bool sign_up(json json);
+    bool sign_in(const json& json);
+    bool sign_up(const json& json);
 
-    bool mkdir(json json);
-    bool cd(json json);
+    bool mkdir(const json& json);
+    bool cd(const json& json);
     json ls(const std::string& id);
-    int32_t rm(json json);
-    int32_t rmdir(json json);
+    int32_t rm(const json& json);
+    int32_t rmdir(const json& json);
     void upload(
         const std::string& id, const std::filesystem::path& path,
         std::shared_ptr<Session> self
@@ -69,5 +69,5 @@ namespace Service{
         std::shared_ptr<Session> self
     );
 
-    std::string cwd(json json);
+    std::string cwd(const json& json);
 };

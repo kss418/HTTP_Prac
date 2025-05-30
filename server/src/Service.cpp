@@ -3,7 +3,7 @@
 #include "../include/FsHelper.hpp"
 #include <iostream>
 
-bool Service::sign_in(json json){
+bool Service::sign_in(const json& json){
     auto& db_helper = DBHelper::get_instance();
     std::string id = json.value("id", "");
     std::string pw = json.value("pw", "");
@@ -12,7 +12,7 @@ bool Service::sign_in(json json){
     return db_helper.match_pw(id, pw);
 }
 
-bool Service::sign_up(json json){
+bool Service::sign_up(const json& json){
     auto& db_helper = DBHelper::get_instance();
     std::string id = json.value("id", "");
     std::string pw = json.value("pw", "");
@@ -25,7 +25,7 @@ bool Service::sign_up(json json){
     return db_helper.create_id(id, pw);
 }
 
-bool Service::mkdir(json json){
+bool Service::mkdir(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string path = json.value("path", "");
     std::string id = json.value("id", "");
@@ -38,7 +38,7 @@ bool Service::mkdir(json json){
     return (fs.m_map[id])->mkdir(path);
 }
 
-bool Service::cd(json json){
+bool Service::cd(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string id = json.value("id", "");
     std::filesystem::path path = json.value("path", "");
@@ -49,13 +49,14 @@ bool Service::cd(json json){
     std::filesystem::path next_path = ((fs.m_map[id])->cwd() / path).lexically_normal();
 
     std::cout << "cd / id = " << id << " path = " << next_path << std::endl;
-    if(!(fs.m_map[id])->exists(next_path)){
+    if(!std::filesystem::exists(next_path)){
         return 0;
     }
-    return (fs.m_map[id])->set_cwd(next_path);
+    (fs.m_map[id])->set_cwd(next_path);
+    return 1;
 }
 
-std::string Service::cwd(json json){
+std::string Service::cwd(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string id = json.value("id", "");
     if(fs.m_map.find(id) == fs.m_map.end()){
@@ -74,7 +75,7 @@ nlohmann::json Service::ls(const std::string& id){
     return (fs.m_map[id])->ls();
 }
 
-int32_t Service::rmdir(json json){
+int32_t Service::rmdir(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string path = json.value("path", "");
     std::string id = json.value("id", "");
@@ -87,7 +88,7 @@ int32_t Service::rmdir(json json){
     return (fs.m_map[id])->rmdir(path);
 }
 
-int32_t Service::rm(json json){
+int32_t Service::rm(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string path = json.value("path", "");
     std::string id = json.value("id", "");
