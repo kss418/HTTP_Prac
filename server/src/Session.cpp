@@ -214,9 +214,7 @@ void Session::execute_string_request(
         Service::rmdir(json, self);
     }
     else if(method == http::verb::delete_ && path == "/rm"){
-        std::cout << 1 << std::endl;
-        int32_t ret = Service::rm(json);
-        write_string(http::status::ok, {{"result", ret}});
+        Service::rm(json, self);
     }
     else if(method == http::verb::post && path == "/cd"){
         bool ret = Service::cd(json);

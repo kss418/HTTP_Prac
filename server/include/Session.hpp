@@ -58,9 +58,9 @@ namespace Service{
 
     void mkdir(const json& json, Session_ptr self);
     void rmdir(const json& json, Session_ptr self);
+    void rm(const json& json, Session_ptr self);
     bool cd(const json& json);
     json ls(const std::string& id);
-    int32_t rm(const json& json);
     
     void upload(
         const std::string& id, const std::filesystem::path& path,

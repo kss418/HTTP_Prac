@@ -236,10 +236,18 @@ void ServerFsHelper::rm(
     );
     auto var = read_fut.get();
 
-    if(!std::holds_alternative<string_parser>(var)){
+    if(!std::holds_alternative<string_parser>(var) &&
+        !std::holds_alternative<empty_parser>(var)
+    ){
         std::cout << "서버 응답 오류" << std::endl;
         return;
     }
+
+    // Response code 200
+    if(std::holds_alternative<empty_parser>(var)){
+        return;
+    }
+
     auto res = std::get<string_parser>(var)->get();
     auto json = Utility::parse_json(res.body());
     if(!json){
@@ -252,8 +260,6 @@ void ServerFsHelper::rm(
         std::cout << message << std::endl;
         return;
     }
-
-    Service::server_rm(*json);
 }
 
 void ServerFsHelper::download(
