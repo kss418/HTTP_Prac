@@ -108,6 +108,43 @@ void Service::rmdir(const json& json, Session_ptr self){
     }
 }
 
+void Service::rm(const json& json, Session_ptr self){
+    auto& fs = FsHelper::get_instance();
+    std::string path = json.value("path", "");
+    std::string id = json.value("id", "");
+
+    if(id.empty() || path.empty()){
+        self->write_string(
+            http::status::bad_request, 
+            {{"message", "요청 형식이 잘못 되었습니다."}}
+        );
+        return;
+    }
+
+    if(fs.m_map.find(id) == fs.m_map.end()){
+        fs.m_map[id] = std::make_unique<FsExecuter>(id);
+    }
+
+    int32_t ret = (fs.m_map[id])->rm(path);
+    if(!ret){
+        self->write_empty(http::status::ok);
+    }
+    else{
+        if(ret == 1){
+            self->write_string(
+                http::status::conflict,
+                {{"message", "해당 파일이 존재하지 않습니다."}}
+            );
+        }
+        else{
+            self->write_string(
+                http::status::conflict,
+                {{"message", "대상이 파일이 아닙니다."}}
+            );
+        }
+    }
+}
+
 bool Service::cd(const json& json){
     auto& fs = FsHelper::get_instance();
     std::string id = json.value("id", "");
@@ -143,19 +180,6 @@ nlohmann::json Service::ls(const std::string& id){
     }
 
     return (fs.m_map[id])->ls();
-}
-
-int32_t Service::rm(const json& json){
-    auto& fs = FsHelper::get_instance();
-    std::string path = json.value("path", "");
-    std::string id = json.value("id", "");
-    if(path.empty()) return -1;
-
-    if(fs.m_map.find(id) == fs.m_map.end()){
-        fs.m_map[id] = std::make_unique<FsExecuter>(id);
-    }
-
-    return (fs.m_map[id])->rm(path);
 }
 
 void Service::download(
